@@ -12,15 +12,7 @@ from opentelemetry.sdk.trace.export import BatchSpanProcessor
 resource = Resource(attributes={"service.name": "fastapi-blog"})
 trace.set_tracer_provider(TracerProvider(resource=resource))
 tracer = trace.get_tracer(__name__)
-
-otlp_exporter = OTLPSpanExporter(
-    endpoint="otel-collector:4317", insecure=True
-)
-
-span_processor = BatchSpanProcessor(otlp_exporter)
 trace.set_tracer_provider(TracerProvider())
-
-trace.get_tracer_provider().add_span_processor(span_processor)
 
 jaeger_exporter = JaegerExporter(
     agent_host_name='localhost',
