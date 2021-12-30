@@ -6,3 +6,6 @@ opentelemetry-exporter-otlp
 opentelemetry-exporter-jaeger
 opentelemetry-exporter-digma
 requests
+fastapi
+python-dotenv
+gitpython

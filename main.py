@@ -1,5 +1,10 @@
 from typing import List, Optional
 from fastapi.params import Query
+import os
+
+import sys
+import traceback
+
 import uvicorn as uvicorn
 from fastapi import FastAPI
 from opentelemetry import trace
@@ -8,8 +13,14 @@ from opentelemetry.sdk.resources import Resource
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from opentelemetry.exporter.digma import DigmaExporter
-from user_service import UserService
-from user_store import UserStore
+from user.user_service import UserService
+import git
+from dotenv import load_dotenv
+
+load_dotenv()
+
+repo = git.Repo(search_parent_directories=True)
+os.environ['GIT_COMMIT_ID'] = repo.head.object.hexsha
 
 from opentelemetry.instrumentation.requests import RequestsInstrumentor
 
@@ -47,8 +58,13 @@ async def validate(user_ids: Optional[List[str]] = Query(None)):
 
 @app.get("/")
 async def root():
-    user_service.all()
-
+    try:
+        #raise_error()
+        user_service.all()
+    except Exception as ex:
+        ex_type, ex, tb = sys.exc_info()
+        ss = traceback.extract_tb(tb)
+        raise ex
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)

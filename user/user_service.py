@@ -1,4 +1,4 @@
-from user_store import UserStore
+from user.user_store import UserStore
 
 
 class UserService:
