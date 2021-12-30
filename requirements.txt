@@ -4,3 +4,5 @@ opentelemetry-instrumentation-fastapi
 opentelemetry-instrumentation-requests
 opentelemetry-exporter-otlp
 opentelemetry-exporter-jaeger
+opentelemetry-exporter-digma
+requests
