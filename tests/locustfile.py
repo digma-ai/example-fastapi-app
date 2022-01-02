@@ -8,6 +8,15 @@ class QuickstartUser(HttpUser):
     def test(self):
         self.client.get("/")
 
+    @task
+    def test(self):
+        self.client.request_name="/validate?user_ids=[ids]"
+        ids = []
+        for i in range(10):
+            ids.append(i)
+            self.client.get(f"/validate?user_ids={ids}")
+        self.client.request_name=None
+
     # @task(3)
     # def view_items(self):
     #     for item_id in range(10):
