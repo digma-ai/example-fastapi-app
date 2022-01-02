@@ -1,3 +1,4 @@
 {
-    "torque.activeProfile": "default"
+    "torque.activeProfile": "default",
+    "digma.environment": "DEV"
 }
