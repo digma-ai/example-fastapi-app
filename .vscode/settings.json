@@ -1,4 +1,5 @@
 {
     "torque.activeProfile": "default",
-    "digma.environment": "DEV"
+    "digma.environment": "DEV",
+    "digma.hideFramesOutsideWorkspace": true
 }

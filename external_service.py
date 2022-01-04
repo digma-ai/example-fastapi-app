@@ -2,6 +2,6 @@ import requests
 class ExternalValidation:
     def validate_with_external_service(self, users_ids):
         if len(users_ids)>4:
-            raise ConnectionError("blah")
+            requests.get('https://digma.ai:7055')
         else:
             return True

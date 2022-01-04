@@ -13,6 +13,7 @@ from opentelemetry.sdk.resources import Resource
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from opentelemetry.exporter.digma import DigmaExporter
+
 from user.user_service import UserService
 import git
 from dotenv import load_dotenv
@@ -23,7 +24,6 @@ repo = git.Repo(search_parent_directories=True)
 os.environ['GIT_COMMIT_ID'] = repo.head.object.hexsha
 
 from opentelemetry.instrumentation.requests import RequestsInstrumentor
-
 from user_validation import UserValidator
 
 # You can optionally pass a custom TracerProvider to instrument().
@@ -41,18 +41,31 @@ trace.get_tracer_provider().add_span_processor(
 app = FastAPI()
 FastAPIInstrumentor.instrument_app(app)
 RequestsInstrumentor().instrument()
+tracer = trace.get_tracer(__name__)
+
+
+def handle_exception(exc_type, exc_value, exc_traceback):
+    print("here")
+
+
+sys.excepthook = handle_exception
 
 
 @app.get("/users")
 async def get_users():
-    raise Exception("test exception")
     return {"message": "Hello World"}
 
 
 @app.get("/validate/")
 async def validate(user_ids: Optional[List[str]] = Query(None)):
     ids = str.split(user_ids[0],',')
-    UserValidator().validate_user(ids)
+    
+    with tracer.start_as_current_span("user validation"):
+        try:
+            await UserValidator().validate_user(ids)
+        except:
+            raise
+
     return "okay"
 
 
