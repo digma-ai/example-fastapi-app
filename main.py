@@ -4,7 +4,6 @@ import os
 
 import sys
 import traceback
-
 import uvicorn as uvicorn
 from fastapi import FastAPI
 from opentelemetry import trace
