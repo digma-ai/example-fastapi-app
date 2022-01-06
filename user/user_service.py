@@ -7,5 +7,6 @@ class UserService:
 
     def all(self):
         users= self.user_store.get_users()
-        for user in users:
-            print(user.name)
+        if users:
+            for user in users:
+                print(user.name)
