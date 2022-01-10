@@ -12,7 +12,7 @@ from flows import D, C, A
 from opentelemetry import trace
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 from opentelemetry.sdk.resources import Resource
-from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace import TracerProvider, Span
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from opentelemetry.exporter.digma import DigmaExporter
 
@@ -45,6 +45,7 @@ resource = Resource(attributes={"service.name": "fastapi-blog"})
 trace.set_tracer_provider(TracerProvider(resource=resource))
 tracer = trace.get_tracer(__name__)
 
+os.environ.setdefault("DIGMA_CONFIG_MODULE", "digma_config")  # must be set by customer
 digma_exporter = DigmaExporter()
 user_service = UserService()
 
@@ -103,6 +104,29 @@ async def flow1():
 @app.get("/flow2")
 async def flow2():
    D().execute()
+
+@app.get("/flow4")
+async def flow4():
+    print(uknown_var)
+
+
+@app.get("/flow5/{num}")
+async def flow5(num: int):
+    # try:
+    local_var = 42
+    print(eval("100/x", {"x": num}))
+    # except:
+    #     ex_type, ex, tb = sys.exc_info()
+    #     ss = traceback.extract_tb(tb)
+    #     st = ss.format()
+    #     raise
+@app.get("/flow6")  # unhandled error
+async def flow6():
+    with tracer.start_as_current_span("flow6") as s:
+        span: Span = s
+        span.set_attribute("att1", "value2")
+        print(uknown_var)
+
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
