@@ -1,7 +1,6 @@
 class UserStore:
     def get_users(self):
-        raise NotImplementedError('invalid value')
-
+        return None
 
 class InMemoryUserStore1(UserStore):
     def get_users(self):
