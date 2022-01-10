@@ -6,6 +6,7 @@ import sys
 import traceback
 import uvicorn as uvicorn
 from fastapi import FastAPI
+from opentelemetry.instrumentation.logging import LoggingInstrumentor
 
 from flows import D, C, A
 from opentelemetry import trace
@@ -54,6 +55,9 @@ app = FastAPI()
 FastAPIInstrumentor.instrument_app(app)
 RequestsInstrumentor().instrument()
 tracer = trace.get_tracer(__name__)
+LoggingInstrumentor().instrument(set_logging_format=True)
+
+
 
 
 def handle_exception(exc_type, exc_value, exc_traceback):
@@ -76,7 +80,7 @@ async def validate(user_ids: Optional[List[str]] = Query(None)):
         try:
             await UserValidator().validate_user(ids)
         except:
-            raise
+            raise Exception(f"wow exception on {user_ids[0]}")
 
     return "okay"
 

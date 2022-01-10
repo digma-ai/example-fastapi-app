@@ -11,4 +11,4 @@ class DomainValidator:
                 raise AttributeError("under control")
                
             if len(user_ids)==4:
-                raise Exception("can't find user")
+                raise Exception(f"can't find user {user_ids[0]}")

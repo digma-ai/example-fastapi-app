@@ -9,3 +9,5 @@ requests
 fastapi
 python-dotenv
 gitpython
+opentelemetry-instrumentation-logging
+
