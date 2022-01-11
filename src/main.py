@@ -45,6 +45,9 @@ resource = Resource(attributes={"service.name": "fastapi-blog"})
 trace.set_tracer_provider(TracerProvider(resource=resource))
 tracer = trace.get_tracer(__name__)
 
+# when project root is not part of the PythonPath.
+# PythonPath should be the path to your project
+# sys.path.append(dirname(dirname(abspath(__file__))))
 os.environ.setdefault("DIGMA_CONFIG_MODULE", "digma_config")  # must be set by customer
 digma_exporter = DigmaExporter()
 user_service = UserService()
