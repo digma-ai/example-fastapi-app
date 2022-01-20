@@ -10,7 +10,7 @@ To build and run the demo, switch to this directory and run
 You should be able to browse different components of the application by using the below URLs :
 
 ```
-Zipkin     : http://localhost:9411/zipkin/
+Zipkin     : http://localhost:9411/
 Jaeger     : http://localhost:16686/
 Prometheus : http://localhost:9090/
 ```
