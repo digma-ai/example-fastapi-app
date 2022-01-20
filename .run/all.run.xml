@@ -1,8 +1,8 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="all" type="CompoundRunConfigurationType">
-    <toRun name="services" type="docker-deploy" />
-    <toRun name="main" type="PythonConfigurationType" />
-    <toRun name="main (1)" type="PythonConfigurationType" />
+    <toRun name="fast-api-client" type="PythonConfigurationType" />
+    <toRun name="fast-api-users" type="PythonConfigurationType" />
+    <toRun name="fast-apii-server" type="PythonConfigurationType" />
     <method v="2" />
   </configuration>
 </component>
