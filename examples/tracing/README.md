@@ -15,4 +15,4 @@ Jaeger     : http://localhost:16686/
 Prometheus : http://localhost:9090/
 ```
 for sending traces to opentelemetry collector do the following:
-set environment variable OTELE_TRACE=True (.env file) when running the faskapi example,
+set environment variable OTELE_TRACE=True (.env file) when running the fastapi example,
