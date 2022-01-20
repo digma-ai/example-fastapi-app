@@ -30,3 +30,15 @@ class D:
             C().execute()
         except Exception:
             raise ValueError('D')
+
+
+def recursive_call(deep: int = 5):
+    parameter = None if deep == 1 or deep == 0 else 'some value'
+    if deep == 0:
+        raise Exception("stopped")
+    try:
+        recursive_call(deep-1)
+    except Exception as ex:
+        if deep == 3:
+            raise ValueError('continue')
+        raise ex

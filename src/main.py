@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Optional, Any
 from fastapi.params import Query
 import os
 
@@ -8,7 +8,7 @@ import uvicorn as uvicorn
 from fastapi import FastAPI
 from opentelemetry.instrumentation.logging import LoggingInstrumentor
 
-from flows import D, C, A
+from flows import D, C, A, recursive_call
 from opentelemetry import trace
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 from opentelemetry.sdk.resources import Resource
@@ -55,6 +55,17 @@ user_service = UserService()
 trace.get_tracer_provider().add_span_processor(
     BatchSpanProcessor(digma_exporter, max_export_batch_size=10)
 )
+
+otel_trace = os.environ.get("OTELE_TRACE", None)
+if otel_trace == 'True':
+    from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import (
+        OTLPSpanExporter,
+    )
+    otlp_exporter = OTLPSpanExporter(endpoint="http://localhost:4317", insecure=True)
+    trace.get_tracer_provider().add_span_processor(
+        BatchSpanProcessor(otlp_exporter)
+    )
+
 app = FastAPI()
 FastAPIInstrumentor.instrument_app(app)
 RequestsInstrumentor().instrument()
@@ -93,6 +104,7 @@ async def validate(user_ids: Optional[List[str]] = Query(None)):
 async def root():
     try:
         #raise_error()
+
         user_service.all()
     except Exception as ex:
         # ex_type, ex, tb = sys.exc_info()
@@ -117,6 +129,7 @@ async def flow4():
 async def flow5(num: int):
     # try:
     local_var = 42
+
     print(eval("100/x", {"x": num}))
     # except:
     #     ex_type, ex, tb = sys.exc_info()
@@ -128,8 +141,20 @@ async def flow6():
     with tracer.start_as_current_span("flow6") as s:
         span: Span = s
         span.set_attribute("att1", "value2")
+
         print(uknown_var)
 
+@app.get("/flow7")  # unhandled error
+async def flow7():
+    user_service.all()
+
+@app.get("/flow8")  # unhandled error
+async def flow8():
+    recursive_call()
+
+@app.get("/flow9")  # unhandled error
+async def flow9():
+    recursive_call()
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
