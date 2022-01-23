@@ -1,0 +1,28 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+      http:
+
+exporters:
+  jaeger:
+    endpoint: "jaeger:14250"
+    insecure: true
+  logging:
+  zipkin:
+    endpoint: "http://zipkin:9411/api/v2/spans"
+  prometheus:
+    endpoint: "0.0.0.0:8889"
+processors:
+  batch:
+
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      exporters: [zipkin, jaeger, logging]
+      processors: [batch]
+    metrics:
+      receivers: [otlp]
+      exporters: [prometheus]
+      processors: [batch]

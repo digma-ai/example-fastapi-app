@@ -9,16 +9,18 @@ from fastapi.params import Query
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 from opentelemetry.instrumentation.logging import LoggingInstrumentor
 from opentelemetry.instrumentation.requests import RequestsInstrumentor
+from opentelemetry.propagators.b3 import B3Format
 from opentelemetry.sdk.resources import Resource
-from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace import TracerProvider, Span
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
 
-from opentelemetry import trace
 from opentelemetry.exporter.digma import DigmaExporter
+from opentelemetry.propagate import set_global_textmap
+
+from flows import D, C, recursive_call
+from opentelemetry import trace
 from user.user_service import UserService
 from user_validation import UserValidator
-from opentelemetry.propagate import set_global_textmap
-from opentelemetry.propagators.b3 import B3Format
 
 set_global_textmap(B3Format())
 load_dotenv()
@@ -42,8 +44,20 @@ digma_exporter = DigmaExporter()
 user_service = UserService()
 
 trace.get_tracer_provider().add_span_processor(
-    BatchSpanProcessor(DigmaExporter(), max_export_batch_size=10)
-)
+    BatchSpanProcessor(DigmaExporter(), max_export_batch_size=10))
+
+otel_trace = os.environ.get("OTELE_TRACE", None)
+if otel_trace == 'True':
+    from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import (
+        OTLPSpanExporter,
+    )
+
+    otlp_exporter = OTLPSpanExporter(endpoint="http://localhost:4317", insecure=True)
+    trace.get_tracer_provider().add_span_processor(
+        BatchSpanProcessor(otlp_exporter)
+    )
+
+
 LoggingInstrumentor().instrument(set_logging_format=True)
 
 app = FastAPI()
@@ -83,7 +97,6 @@ async def validate(user_ids: Optional[List[str]] = Query(None)):
 @app.get("/")
 async def root():
     try:
-        #raise_error()
         user_service.all("1")
     except Exception as ex:
         # ex_type, ex, tb = sys.exc_info()
@@ -91,6 +104,49 @@ async def root():
         raise Exception(f'error occurred : {str(ex)}')
 
 
+@app.get("/flow1")
+async def flow1():
+   C().execute()
+
+@app.get("/flow2")
+async def flow2():
+   D().execute()
+
+@app.get("/flow4")
+async def flow4():
+    print(uknown_var)
+
+
+@app.get("/flow5/{num}")
+async def flow5(num: int):
+    # try:
+    local_var = 42
+
+    print(eval("100/x", {"x": num}))
+    # except:
+    #     ex_type, ex, tb = sys.exc_info()
+    #     ss = traceback.extract_tb(tb)
+    #     st = ss.format()
+    #     raise
+@app.get("/flow6")  # unhandled error
+async def flow6():
+    with tracer.start_as_current_span("flow6") as s:
+        span: Span = s
+        span.set_attribute("att1", "value2")
+
+        print(uknown_var)
+
+@app.get("/flow7")  # unhandled error
+async def flow7():
+    user_service.all()
+
+@app.get("/flow8")  # unhandled error
+async def flow8():
+    recursive_call()
+
+@app.get("/flow9")  # unhandled error
+async def flow9():
+    recursive_call()
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)

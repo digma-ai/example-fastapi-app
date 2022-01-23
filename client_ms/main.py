@@ -31,6 +31,16 @@ trace.get_tracer_provider().add_span_processor(
     BatchSpanProcessor(DigmaExporter(), max_export_batch_size=10)
 )
 
+otel_trace = os.environ.get("OTELE_TRACE", None)
+if otel_trace == 'True':
+    from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import (
+        OTLPSpanExporter,
+    )
+
+    otlp_exporter = OTLPSpanExporter(endpoint="http://localhost:4317", insecure=True)
+    trace.get_tracer_provider().add_span_processor(
+        BatchSpanProcessor(otlp_exporter)
+    )
 app = FastAPI()
 FastAPIInstrumentor.instrument_app(app)
 RequestsInstrumentor().instrument()
