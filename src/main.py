@@ -6,15 +6,16 @@ import uvicorn as uvicorn
 from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.params import Query
-from opentelemetry.exporter.digma import DigmaExporter
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 from opentelemetry.instrumentation.logging import LoggingInstrumentor
 from opentelemetry.instrumentation.requests import RequestsInstrumentor
-from opentelemetry.propagate import set_global_textmap
 from opentelemetry.propagators.b3 import B3Format
 from opentelemetry.sdk.resources import Resource
-from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace import TracerProvider, Span
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
+
+from opentelemetry.exporter.digma import DigmaExporter
+from opentelemetry.propagate import set_global_textmap
 
 from flows import D, C, recursive_call
 from opentelemetry import trace
@@ -50,6 +51,7 @@ if otel_trace == 'True':
     from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import (
         OTLPSpanExporter,
     )
+
     otlp_exporter = OTLPSpanExporter(endpoint="http://localhost:4317", insecure=True)
     trace.get_tracer_provider().add_span_processor(
         BatchSpanProcessor(otlp_exporter)
