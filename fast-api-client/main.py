@@ -56,8 +56,8 @@ async def root():
     with tracer.start_as_current_span("admin console"):
         print(f"in span {trace.get_current_span().get_span_context().span_id}")
         response =  requests.get('http://localhost:8000/')
-        if response.status_code!=200:
-            raise Exception('bad request')
+        response.raise_for_status()
+        
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8001)
