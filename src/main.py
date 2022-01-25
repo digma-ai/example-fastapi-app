@@ -148,6 +148,14 @@ async def flow8():
 async def flow9():
     recursive_call()
 
+
+@app.get("/flow10")
+async def flow10():
+   test_value=None
+   test_value_none=None
+   recursive_call()
+
+
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
     
