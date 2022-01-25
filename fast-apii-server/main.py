@@ -114,13 +114,13 @@ async def validate(user_ids: Optional[List[str]] = Query(None)):
 
 
 @app.get("/validateuser")
-async def validate_user(rethrow: bool = False, unexpected: bool = True, complex:  bool = True, handled=True):
-
-    with tracer.start_as_current_span("external validation") as span:
-        try:
-            UserValidator.validate_user()
-        except:
-            raise Exception("error validating")
+async def validate_user():
+    try:
+        user_service.all("2")
+    except Exception as ex:
+        # ex_type, ex, tb = sys.exc_info()
+        # ss = traceback.extract_tb(tb)
+        raise Exception(f'error occurred : {str(ex)}')
 
 
 @app.get("/flow7")  # unhandled error
