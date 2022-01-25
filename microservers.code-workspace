@@ -1,0 +1,17 @@
+{
+	"folders": [
+		{
+			"path": "fast-apii-server"
+		},
+		{
+			"path": "fast-api-client"
+		},
+		{
+			"path": "fast-api-users"
+		}
+	],
+	"settings": {
+		"digma.environment": "DEV",
+		"digma.hideFramesOutsideWorkspace": true
+	}
+}

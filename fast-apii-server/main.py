@@ -26,12 +26,8 @@ set_global_textmap(B3Format())
 load_dotenv()
 
 repo = git.Repo(search_parent_directories=True)
+
 os.environ['GIT_COMMIT_ID'] = repo.head.object.hexsha
-path = os.path.abspath(os.path.dirname(__file__) + os.path.sep + os.path.pardir)
-os.environ.setdefault("PROJECT_ROOT", path )
-os.environ.setdefault("DIGMA_CONFIG_MODULE", "digma_config")  # must be set by customer
-
-
 resource = Resource(attributes={"service.name": "fastapi-blog"})
 trace.set_tracer_provider(TracerProvider(resource=resource))
 tracer = trace.get_tracer(__name__)
@@ -104,37 +100,28 @@ async def root():
         raise Exception(f'error occurred : {str(ex)}')
 
 
-@app.get("/flow1")
-async def flow1():
-   C().execute()
+@app.get("/validate/")
+async def validate(user_ids: Optional[List[str]] = Query(None)):
+    ids = str.split(user_ids[0],',')
+    
+    with tracer.start_as_current_span("user validation"):
+        try:
+            await UserValidator().validate_user(ids)
+        except:
+            raise Exception(f"wow exception on {user_ids[0]}")
 
-@app.get("/flow2")
-async def flow2():
-   D().execute()
-
-@app.get("/flow4")
-async def flow4():
-    print(uknown_var)
+    return "okay"
 
 
-@app.get("/flow5/{num}")
-async def flow5(num: int):
-    # try:
-    local_var = 42
+@app.get("/validateuser")
+async def validate_user(rethrow: bool = False, unexpected: bool = True, complex:  bool = True, handled=True):
 
-    print(eval("100/x", {"x": num}))
-    # except:
-    #     ex_type, ex, tb = sys.exc_info()
-    #     ss = traceback.extract_tb(tb)
-    #     st = ss.format()
-    #     raise
-@app.get("/flow6")  # unhandled error
-async def flow6():
-    with tracer.start_as_current_span("flow6") as s:
-        span: Span = s
-        span.set_attribute("att1", "value2")
+    with tracer.start_as_current_span("external validation") as span:
+        try:
+            UserValidator.validate_user()
+        except:
+            raise Exception("error validating")
 
-        print(uknown_var)
 
 @app.get("/flow7")  # unhandled error
 async def flow7():
@@ -144,9 +131,6 @@ async def flow7():
 async def flow8():
     recursive_call()
 
-@app.get("/flow9")  # unhandled error
-async def flow9():
-    recursive_call()
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
