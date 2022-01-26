@@ -77,23 +77,10 @@ async def get_users():
     with tracer.start_as_current_span("user validation"):
         user_service.some(None)
 
-@app.get("/validate/")
-async def validate(user_ids: Optional[List[str]] = Query(None)):
-    ids = str.split(user_ids[0],',')
-    
-    with tracer.start_as_current_span("user validation"):
-        try:
-            await UserValidator().validate_user(ids)
-        except:
-            raise Exception(f"wow exception on {user_ids[0]}")
-
-    return "okay"
-
-
 @app.get("/")
 async def root():
     try:
-        user_service.all("1")
+        user_service.all("2")
     except Exception as ex:
         # ex_type, ex, tb = sys.exc_info()
         # ss = traceback.extract_tb(tb)
@@ -105,10 +92,7 @@ async def validate(user_ids: Optional[List[str]] = Query(None)):
     ids = str.split(user_ids[0],',')
     
     with tracer.start_as_current_span("user validation"):
-        try:
-            await UserValidator().validate_user(ids)
-        except:
-            raise Exception(f"wow exception on {user_ids[0]}")
+        await UserValidator().validate_user(ids)
 
     return "okay"
 

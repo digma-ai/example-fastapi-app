@@ -38,10 +38,11 @@ def popuplate_data():
 
     iterate_over_error(scanarios.normal_error, 'Generating normal error', 5)
     iterate_over_error(scanarios.unexpected_exception, 'Generating unexpected error', 10)
+    iterate_over_error(scanarios.rethrown_exception, 'Generating unexpected error', 20)
     iterate_over_error(scanarios.multi_ms, 'Generating multi_ms error', 3)
     iterate_over_error(scanarios.double_multi_ms, 'Generating double_multi_ms error', 3)
     iterate_over_error(scanarios.handled_exception, 'Generating handled_exception error', 5)
-    iterate_over_error(scanarios.complex_exception, 'Generating complex error', 2)
+    iterate_over_error(scanarios.complex_exception, 'Generating complex error', 1)
     print ('Done generating errors!')
 
 if __name__ == "__main__":
