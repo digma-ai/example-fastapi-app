@@ -4,7 +4,7 @@ from typing import List, Optional
 import git
 import uvicorn as uvicorn
 from dotenv import load_dotenv
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.params import Query
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 from opentelemetry.instrumentation.logging import LoggingInstrumentor
@@ -57,8 +57,23 @@ if otel_trace == 'True':
 LoggingInstrumentor().instrument(set_logging_format=True)
 
 app = FastAPI()
-FastAPIInstrumentor.instrument_app(app)
+
+
+
+def server_request_hook(span: Span, scope: dict):
+    if span and span.is_recording():
+        for header, value in scope['headers']:
+            if header == b'x-simulated-time':
+                span.set_attribute('x-simulated-time', value)
+
+
+def client_request_hook(span: Span, scope: dict):
+    if span and span.is_recording():
+        span.set_attribute("custom_user_attribute_from_client_request_hook", "some-value")
+
+FastAPIInstrumentor.instrument_app(app, server_request_hook=server_request_hook, client_request_hook=client_request_hook)
 RequestsInstrumentor().instrument()
+
 tracer = trace.get_tracer(__name__)
 
 user_service = UserService()
@@ -80,7 +95,8 @@ async def get_users():
 @app.get("/")
 async def root():
     try:
-        user_service.all("2")
+        with tracer.start_as_current_span("root"):
+            user_service.all("2")
     except Exception as ex:
         # ex_type, ex, tb = sys.exc_info()
         # ss = traceback.extract_tb(tb)
