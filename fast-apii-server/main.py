@@ -1,6 +1,6 @@
 import os
 from typing import List, Optional
-
+from test_instrumentation import FastApiTestInstrumentation, OpenTelemetryTimeOverride
 import git
 import uvicorn as uvicorn
 from dotenv import load_dotenv
@@ -13,10 +13,8 @@ from opentelemetry.propagators.b3 import B3Format
 from opentelemetry.sdk.resources import Resource
 from opentelemetry.sdk.trace import TracerProvider, Span
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
-
 from opentelemetry.exporter.digma import DigmaExporter
 from opentelemetry.propagate import set_global_textmap
-
 from flows import D, C, recursive_call
 from opentelemetry import trace
 from user.user_service import UserService
@@ -26,7 +24,6 @@ set_global_textmap(B3Format())
 load_dotenv()
 
 repo = git.Repo(search_parent_directories=True)
-
 os.environ['GIT_COMMIT_ID'] = repo.head.object.hexsha
 resource = Resource(attributes={"service.name": "fastapi-blog"})
 trace.set_tracer_provider(TracerProvider(resource=resource))
@@ -36,11 +33,11 @@ tracer = trace.get_tracer(__name__)
 # PythonPath should be the path to your project
 # sys.path.append(dirname(dirname(abspath(__file__))))
 os.environ.setdefault("DIGMA_CONFIG_MODULE", "digma_config")  # must be set by customer
-digma_exporter = DigmaExporter()
+digma_exporter = DigmaExporter(pre_processors=[OpenTelemetryTimeOverride.test_overrides])
 user_service = UserService()
 
 trace.get_tracer_provider().add_span_processor(
-    BatchSpanProcessor(DigmaExporter(), max_export_batch_size=10))
+    BatchSpanProcessor(digma_exporter, max_export_batch_size=10))
 
 otel_trace = os.environ.get("OTELE_TRACE", None)
 if otel_trace == 'True':
@@ -53,25 +50,12 @@ if otel_trace == 'True':
         BatchSpanProcessor(otlp_exporter)
     )
 
-
 LoggingInstrumentor().instrument(set_logging_format=True)
-
 app = FastAPI()
 
-
-
-def server_request_hook(span: Span, scope: dict):
-    if span and span.is_recording():
-        for header, value in scope['headers']:
-            if header == b'x-simulated-time':
-                span.set_attribute('x-simulated-time', value)
-
-
-def client_request_hook(span: Span, scope: dict):
-    if span and span.is_recording():
-        span.set_attribute("custom_user_attribute_from_client_request_hook", "some-value")
-
-FastAPIInstrumentor.instrument_app(app, server_request_hook=server_request_hook, client_request_hook=client_request_hook)
+FastAPIInstrumentor.instrument_app(app, server_request_hook=FastApiTestInstrumentation.server_request_hook,
+                                   client_request_hook=FastApiTestInstrumentation.client_request_hook,
+                                   client_response_hook=FastApiTestInstrumentation.client_response_hook)
 RequestsInstrumentor().instrument()
 
 tracer = trace.get_tracer(__name__)

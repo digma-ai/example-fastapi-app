@@ -1,7 +1,7 @@
 import datetime
 import time
 import requests
-
+from test_instrumentation import TestHelpers
 
 class DataScenarios:
 
@@ -26,6 +26,7 @@ class DataScenarios:
     def unexpected_exception(self, headers):
         requests.get('http://localhost:8000/validateuser/', headers=headers)
 
+
 def iterate_over_error(function, message, iterations, headers=None):
     if headers==None:
         headers={}
@@ -36,22 +37,31 @@ def iterate_over_error(function, message, iterations, headers=None):
         time.sleep(0.2)
     print("\n")
 
-def get_timestamp_header(delta : datetime.timedelta):
-    new_time = datetime.datetime.now() + delta
-    timestamp = str(int(datetime.datetime.timestamp(new_time)) * 1000000000)
-    return {'x-simulated-time' : timestamp}
 
 def popuplate_data():
     scanarios = DataScenarios()
 
     four_days_ago = datetime.timedelta(days=-4)
-    iterate_over_error(scanarios.normal_error, 'Generating normal error', 5, headers=get_timestamp_header(four_days_ago))
-    iterate_over_error(scanarios.unexpected_exception, 'Generating unexpected error', 10)
-    iterate_over_error(scanarios.rethrown_exception, 'Generating unexpected error', 30)
-    iterate_over_error(scanarios.multi_ms, 'Generating multi_ms error', 3)
-    iterate_over_error(scanarios.double_multi_ms, 'Generating double_multi_ms error', 3)
-    iterate_over_error(scanarios.handled_exception, 'Generating handled_exception error', 5)
-    iterate_over_error(scanarios.complex_exception, 'Generating complex error', 1)
+    one_minute = datetime.timedelta(minutes=1)
+    one_hour = datetime.timedelta(hours=1)
+
+
+    TestHelpers\
+        .create_errors_over_timespan(scanarios.multi_ms, 'Generating normal error',100,
+                                     lambda i: TestHelpers.get_timestamp_header(initial_time=four_days_ago,
+                                                                                interval=one_minute,
+                                                                                iteration=i))
+    #
+    # create_errors_over_timespan(scanarios.multi_ms, 'Generating normal error', 50,
+    #                             lambda i: get_timestamp_header(initial_time=four_days_ago,
+    #                                                            interval=one_hour,
+    #                                                            iteration=i))
+    #         # iterate_over_error(scanarios.unexpected_exception, 'Generating unexpected error', 10)
+    # iterate_over_error(scanarios.rethrown_exception, 'Generating unexpected error', 30)
+    # iterate_over_error(scanarios.multi_ms, 'Generating multi_ms error', 3)
+    # iterate_over_error(scanarios.double_multi_ms, 'Generating double_multi_ms error', 3)
+    # iterate_over_error(scanarios.handled_exception, 'Generating handled_exception error', 5)
+    # iterate_over_error(scanarios.complex_exception, 'Generating complex error', 1)
     print ('Done generating errors!')
 
 if __name__ == "__main__":
