@@ -1,6 +1,5 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="all" type="CompoundRunConfigurationType">
-    <toRun name="services" type="docker-deploy" />
     <toRun name="backend" type="PythonConfigurationType" />
     <toRun name="client" type="PythonConfigurationType" />
     <toRun name="users" type="PythonConfigurationType" />

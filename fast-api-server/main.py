@@ -7,59 +7,58 @@ from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.params import Query
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
-from opentelemetry.instrumentation.logging import LoggingInstrumentor
-from opentelemetry.instrumentation.requests import RequestsInstrumentor
+from opentelemetry.propagate import set_global_textmap
 from opentelemetry.propagators.b3 import B3Format
 from opentelemetry.sdk.resources import Resource
-from opentelemetry.sdk.trace import TracerProvider, Span
-from opentelemetry.sdk.trace.export import BatchSpanProcessor
+from opentelemetry.sdk.trace import TracerProvider
 
-from opentelemetry.exporter.digma import DigmaExporter
-from opentelemetry.propagate import set_global_textmap
-
-from flows import D, C, recursive_call
+from conf import DIGMA_CONFIG_MODULE
+from conf.environment_variables import GIT_COMMIT_ID
+from flows import recursive_call
 from opentelemetry import trace
+from opentelemetry.exporter.digma import register_batch_digma_exporter
 from user.user_service import UserService
 from user_validation import UserValidator
 
-set_global_textmap(B3Format())
+set_global_textmap(B3Format())  # todo shay @roni why we need it??
 load_dotenv()
 
-repo = git.Repo(search_parent_directories=True)
+try:
+    repo = git.Repo(search_parent_directories=True)
 
-os.environ['GIT_COMMIT_ID'] = repo.head.object.hexsha
+    os.environ[GIT_COMMIT_ID] = repo.head.object.hexsha
+except:
+    pass
+
 resource = Resource(attributes={"service.name": "fastapi-blog"})
 trace.set_tracer_provider(TracerProvider(resource=resource))
 tracer = trace.get_tracer(__name__)
 
-# when project root is not part of the PythonPath.
-# PythonPath should be the path to your project
-# sys.path.append(dirname(dirname(abspath(__file__))))
-os.environ.setdefault("DIGMA_CONFIG_MODULE", "digma_config")  # must be set by customer
-digma_exporter = DigmaExporter()
-user_service = UserService()
 
-trace.get_tracer_provider().add_span_processor(
-    BatchSpanProcessor(DigmaExporter(), max_export_batch_size=10))
+"""
+the following 2 lines are needed to register Digma exporter
+"""
+os.environ.setdefault(DIGMA_CONFIG_MODULE, "digma_config")  # or set PROJECT_ROOT
+register_batch_digma_exporter()
 
-otel_trace = os.environ.get("OTELE_TRACE", None)
-if otel_trace == 'True':
-    from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import (
-        OTLPSpanExporter,
-    )
+# otel_trace = os.environ.get("OTELE_TRACE", None)
+# if otel_trace == 'True':
+#     from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import (
+#         OTLPSpanExporter,
+#     )
+#
+#     otlp_exporter = OTLPSpanExporter(endpoint="http://localhost:4317", insecure=True)
+#     trace.get_tracer_provider().add_span_processor(
+#         BatchSpanProcessor(otlp_exporter)
+#     )
 
-    otlp_exporter = OTLPSpanExporter(endpoint="http://localhost:4317", insecure=True)
-    trace.get_tracer_provider().add_span_processor(
-        BatchSpanProcessor(otlp_exporter)
-    )
-
-
-LoggingInstrumentor().instrument(set_logging_format=True)
+# LoggingInstrumentor().instrument(set_logging_format=True)
 
 app = FastAPI()
+
+# the following line is mandatory to instrument fastapi
 FastAPIInstrumentor.instrument_app(app)
-RequestsInstrumentor().instrument()
-tracer = trace.get_tracer(__name__)
+# RequestsInstrumentor().instrument()
 
 user_service = UserService()
 
@@ -68,19 +67,21 @@ user_service = UserService()
 async def get_users():
     with tracer.start_as_current_span("user validation"):
         try:
-            await UserValidator().validate_user(["2","2","3","4"])
+            await UserValidator().validate_user(["2", "2", "3", "4"])
         except:
             raise Exception("here")
+
 
 @app.get("/users")
 async def get_users():
     with tracer.start_as_current_span("user validation"):
         user_service.some(None)
 
+
 @app.get("/validate/")
 async def validate(user_ids: Optional[List[str]] = Query(None)):
-    ids = str.split(user_ids[0],',')
-    
+    ids = str.split(user_ids[0], ',')
+
     with tracer.start_as_current_span("user validation"):
         try:
             await UserValidator().validate_user(ids)
@@ -102,8 +103,8 @@ async def root():
 
 @app.get("/validate/")
 async def validate(user_ids: Optional[List[str]] = Query(None)):
-    ids = str.split(user_ids[0],',')
-    
+    ids = str.split(user_ids[0], ',')
+
     with tracer.start_as_current_span("user validation"):
         try:
             await UserValidator().validate_user(ids)
@@ -127,19 +128,18 @@ async def validate_user():
 async def flow7():
     user_service.all()
 
+
 @app.get("/flow8")  # unhandled error
 async def flow8():
     recursive_call()
 
 
-
 @app.get("/flow10")
 async def flow10():
-   test_value=None
-   test_value_none=None
-   recursive_call()
+    test_value = None
+    test_value_none = None
+    recursive_call()
 
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
-    
