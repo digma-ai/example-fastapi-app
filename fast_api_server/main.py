@@ -17,6 +17,7 @@ from conf.environment_variables import GIT_COMMIT_ID
 from flows import recursive_call
 from opentelemetry import trace
 from opentelemetry.exporter.digma import register_batch_digma_exporter
+from test_instrumentation_helpers.test_instrumentation import OpenTelemetryTimeOverride, FastApiTestInstrumentation
 from user.user_service import UserService
 from user_validation import UserValidator
 
@@ -39,7 +40,7 @@ tracer = trace.get_tracer(__name__)
 the following 2 lines are needed to register Digma exporter
 """
 os.environ.setdefault(DIGMA_CONFIG_MODULE, "digma_config")  # or set PROJECT_ROOT
-register_batch_digma_exporter()
+register_batch_digma_exporter(pre_processors=[OpenTelemetryTimeOverride.test_overrides])
 
 # otel_trace = os.environ.get("OTELE_TRACE", None)
 # if otel_trace == 'True':
@@ -56,9 +57,9 @@ register_batch_digma_exporter()
 
 app = FastAPI()
 
-# the following line is mandatory to instrument fastapi
-FastAPIInstrumentor.instrument_app(app)
-# RequestsInstrumentor().instrument()
+FastAPIInstrumentor.instrument_app(app, server_request_hook=FastApiTestInstrumentation.server_request_hook,
+                                   client_request_hook=FastApiTestInstrumentation.client_request_hook,
+                                   client_response_hook=FastApiTestInstrumentation.client_response_hook)
 
 user_service = UserService()
 

@@ -1,24 +1,22 @@
+import os
+
+import git
 import requests
 import uvicorn
 from dotenv import load_dotenv
-import git
-import os
-
 from fastapi import FastAPI
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
-from opentelemetry.instrumentation.logging import LoggingInstrumentor
-from opentelemetry.instrumentation.requests import RequestsInstrumentor
+from opentelemetry.propagate import set_global_textmap
+from opentelemetry.propagators.b3 import B3Format
 from opentelemetry.sdk.resources import Resource
 from opentelemetry.sdk.trace import TracerProvider
-from opentelemetry.sdk.trace.export import BatchSpanProcessor
 
 from conf.environment_variables import GIT_COMMIT_ID, PROJECT_ROOT
 from opentelemetry import trace
-from opentelemetry.exporter.digma import DigmaExporter, register_batch_digma_exporter
-from opentelemetry.propagate import set_global_textmap
-from opentelemetry.propagators.b3 import B3Format
+from opentelemetry.exporter.digma import register_batch_digma_exporter
+from test_instrumentation_helpers.test_instrumentation import OpenTelemetryTimeOverride, FastApiTestInstrumentation
 
-set_global_textmap(B3Format()) # todo shay @roni why we need it??
+set_global_textmap(B3Format())
 load_dotenv()
 
 try:
@@ -36,7 +34,7 @@ the following 3 lines are needed to register Digma exporter
 """
 path = os.path.abspath(os.path.dirname(__file__))
 os.environ.setdefault(PROJECT_ROOT, path)  # or set DIGMA_CONFIG_MODULE
-register_batch_digma_exporter()
+register_batch_digma_exporter(pre_processors=[OpenTelemetryTimeOverride.test_overrides])
 
 # otel_trace = os.environ.get("OTELE_TRACE", None)
 # if otel_trace == 'True':
@@ -49,9 +47,9 @@ register_batch_digma_exporter()
 #         BatchSpanProcessor(otlp_exporter)
 #     )
 app = FastAPI()
-FastAPIInstrumentor.instrument_app(app)
-RequestsInstrumentor().instrument()
-LoggingInstrumentor().instrument(set_logging_format=True)
+FastAPIInstrumentor.instrument_app(app, server_request_hook=FastApiTestInstrumentation.server_request_hook)
+# RequestsInstrumentor().instrument()
+# LoggingInstrumentor().instrument(set_logging_format=True)
 
 tracer = trace.get_tracer(__name__)
 
