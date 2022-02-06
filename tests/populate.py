@@ -1,7 +1,9 @@
 import datetime
 import time
 import requests
-from test_instrumentation import TestHelpers
+
+from test_instrumentation_helpers.test_instrumentation import TestHelpers
+
 
 class DataScenarios:
 

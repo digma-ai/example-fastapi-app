@@ -1,8 +1,8 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="all" type="CompoundRunConfigurationType">
-    <toRun name="fast-api-client" type="PythonConfigurationType" />
-    <toRun name="fast-api-users" type="PythonConfigurationType" />
-    <toRun name="fast-apii-server" type="PythonConfigurationType" />
+    <toRun name="client" type="PythonConfigurationType" />
+    <toRun name="server" type="PythonConfigurationType" />
+    <toRun name="users" type="PythonConfigurationType" />
     <method v="2" />
   </configuration>
 </component>
