@@ -23,7 +23,6 @@ class TestHelpers:
         timestamp = str(int(datetime.datetime.timestamp(new_time)) * 1000000000)
         return {'x-simulated-time': timestamp}
 
-
 class OpenTelemetryTimeOverride:
 
     @staticmethod
@@ -31,17 +30,17 @@ class OpenTelemetryTimeOverride:
         simulated_spans = [span for span in spans if (span.attributes and 'x-simulated-time' in span.attributes)]
         if not simulated_spans:
             return
-        root_span = simulated_spans[0]
+        root_span=simulated_spans[0]
         if root_span:
             new_time = int(root_span.attributes['x-simulated-time'])
 
             for span in spans:
-                delta = span.start_time - root_span.start_time
-                duration = span.end_time - span.start_time
+                delta = span.start_time-root_span.start_time
+                duration = span.end_time-span.start_time
 
                 for event in span.events:
                     delta = event.timestamp - span.start_time
-                    event._timestamp = new_time + delta
+                    event._timestamp=new_time+delta
 
                 span._start_time = new_time + delta
                 span._end_time = span.start_time + duration

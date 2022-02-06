@@ -1,13 +1,14 @@
 import os
+from typing import Optional
 
 import git
 import requests
 import uvicorn
 from dotenv import load_dotenv
-from fastapi import FastAPI
+from fastapi import FastAPI, Header
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
-from opentelemetry.propagate import set_global_textmap
-from opentelemetry.propagators.b3 import B3Format
+from opentelemetry.instrumentation.logging import LoggingInstrumentor
+from opentelemetry.instrumentation.requests import RequestsInstrumentor
 from opentelemetry.sdk.resources import Resource
 from opentelemetry.sdk.trace import TracerProvider
 
@@ -17,7 +18,6 @@ from opentelemetry import trace
 from opentelemetry.exporter.digma import register_batch_digma_exporter
 from test_instrumentation_helpers.test_instrumentation import OpenTelemetryTimeOverride, FastApiTestInstrumentation
 
-set_global_textmap(B3Format())
 load_dotenv()
 
 try:
@@ -29,15 +29,12 @@ except:
 resource = Resource(attributes={"service.name": "client_ms"})
 trace.set_tracer_provider(TracerProvider(resource=resource))
 
-
 """
 the following 3 lines are needed to register Digma exporter
 """
 path = os.path.abspath(os.path.dirname(__file__))
 os.environ.setdefault(PROJECT_ROOT, path)  # or set DIGMA_CONFIG_MODULE
 register_batch_digma_exporter(pre_processors=[OpenTelemetryTimeOverride.test_overrides])
-
-
 
 # otel_trace = os.environ.get("OTELE_TRACE", None)
 # if otel_trace == 'True':
@@ -51,20 +48,21 @@ register_batch_digma_exporter(pre_processors=[OpenTelemetryTimeOverride.test_ove
 #     )
 app = FastAPI()
 
-# RequestsInstrumentor().instrument()
-# LoggingInstrumentor().instrument(set_logging_format=True)
-
 FastAPIInstrumentor.instrument_app(app, server_request_hook=FastApiTestInstrumentation.server_request_hook)
-
+RequestsInstrumentor().instrument()
+LoggingInstrumentor().instrument(set_logging_format=True)
 tracer = trace.get_tracer(__name__)
 
 
 @app.get("/")
-async def root():
+async def root(x_simulated_time: Optional[str] = Header(None)):
+    headers = {}
+    if x_simulated_time:
+        headers['x-simulated-time'] = x_simulated_time
     print(f"in span {trace.get_current_span().get_span_context().span_id}")
     with tracer.start_as_current_span("admin console"):
         print(f"in span {trace.get_current_span().get_span_context().span_id}")
-        response = requests.get('http://localhost:8000/')
+        response = requests.get('http://localhost:8000/', headers=headers)
         response.raise_for_status()
 
 

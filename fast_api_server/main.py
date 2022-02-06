@@ -7,8 +7,8 @@ from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.params import Query
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
-from opentelemetry.propagate import set_global_textmap
-from opentelemetry.propagators.b3 import B3Format
+from opentelemetry.instrumentation.logging import LoggingInstrumentor
+from opentelemetry.instrumentation.requests import RequestsInstrumentor
 from opentelemetry.sdk.resources import Resource
 from opentelemetry.sdk.trace import TracerProvider
 
@@ -21,7 +21,6 @@ from test_instrumentation_helpers.test_instrumentation import OpenTelemetryTimeO
 from user.user_service import UserService
 from user_validation import UserValidator
 
-set_global_textmap(B3Format())  # todo shay @roni why we need it??
 load_dotenv()
 
 try:
@@ -53,13 +52,13 @@ register_batch_digma_exporter(pre_processors=[OpenTelemetryTimeOverride.test_ove
 #         BatchSpanProcessor(otlp_exporter)
 #     )
 
-# LoggingInstrumentor().instrument(set_logging_format=True)
-
 app = FastAPI()
 
 FastAPIInstrumentor.instrument_app(app, server_request_hook=FastApiTestInstrumentation.server_request_hook,
                                    client_request_hook=FastApiTestInstrumentation.client_request_hook,
                                    client_response_hook=FastApiTestInstrumentation.client_response_hook)
+RequestsInstrumentor().instrument()
+LoggingInstrumentor().instrument(set_logging_format=True)
 
 user_service = UserService()
 
@@ -79,23 +78,11 @@ async def get_users():
         user_service.some(None)
 
 
-@app.get("/validate/")
-async def validate(user_ids: Optional[List[str]] = Query(None)):
-    ids = str.split(user_ids[0], ',')
-
-    with tracer.start_as_current_span("user validation"):
-        try:
-            await UserValidator().validate_user(ids)
-        except:
-            raise Exception(f"wow exception on {user_ids[0]}")
-
-    return "okay"
-
-
 @app.get("/")
 async def root():
     try:
-        user_service.all("1")
+        with tracer.start_as_current_span("root"):
+            user_service.all("2")
     except Exception as ex:
         # ex_type, ex, tb = sys.exc_info()
         # ss = traceback.extract_tb(tb)
@@ -107,10 +94,7 @@ async def validate(user_ids: Optional[List[str]] = Query(None)):
     ids = str.split(user_ids[0], ',')
 
     with tracer.start_as_current_span("user validation"):
-        try:
-            await UserValidator().validate_user(ids)
-        except:
-            raise Exception(f"wow exception on {user_ids[0]}")
+        await UserValidator().validate_user(ids)
 
     return "okay"
 
@@ -132,13 +116,6 @@ async def flow7():
 
 @app.get("/flow8")  # unhandled error
 async def flow8():
-    recursive_call()
-
-
-@app.get("/flow10")
-async def flow10():
-    test_value = None
-    test_value_none = None
     recursive_call()
 
 

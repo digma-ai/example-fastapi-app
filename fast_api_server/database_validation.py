@@ -1,4 +1,5 @@
 import requests
+from starlette.concurrency import run_in_threadpool
 
 from opentelemetry import trace
 
@@ -11,7 +12,8 @@ class DomainValidator:
         with tracer.start_as_current_span("handled operation") as span:
 
             if len(user_ids) > 4:
-                return requests.get('https://digma.ai:5555')
+                rst = await run_in_threadpool(lambda: requests.get('https://digma.ai:5555'))
+                return rst
 
             if len(user_ids) < 4:
                 raise AttributeError("under control")
