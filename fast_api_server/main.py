@@ -17,7 +17,7 @@ from conf.environment_variables import GIT_COMMIT_ID
 from flows import recursive_call
 from opentelemetry import trace
 from opentelemetry.exporter.digma import register_batch_digma_exporter
-from test_instrumentation import FastApiTestInstrumentation, OpenTelemetryTimeOverride
+from test_instrumentation_helpers.test_instrumentation import FastApiTestInstrumentation, OpenTelemetryTimeOverride
 from user.user_service import UserService
 from user_validation import UserValidator
 

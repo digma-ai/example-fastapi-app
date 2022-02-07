@@ -15,7 +15,7 @@ from opentelemetry.sdk.trace import TracerProvider
 from conf.environment_variables import GIT_COMMIT_ID, PROJECT_ROOT
 from opentelemetry import trace
 from opentelemetry.exporter.digma import register_batch_digma_exporter
-from test_instrumentation import OpenTelemetryTimeOverride, FastApiTestInstrumentation
+from test_instrumentation_helpers.test_instrumentation import OpenTelemetryTimeOverride, FastApiTestInstrumentation
 
 load_dotenv()
 
