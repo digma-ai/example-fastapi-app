@@ -1,13 +1,19 @@
 {
 	"folders": [
 		{
-			"path": "fast-apii-server"
+			"path": "../torque-blueprints"
 		},
 		{
-			"path": "fast-api-client"
+			"path": "fast_api_client"
 		},
 		{
-			"path": "fast-api-users"
+			"path": "fast_api_server"
+		},
+		{
+			"path": "fast_api_users"
+		},
+		{
+			"path": "test_instrumentation_helpers"
 		}
 	],
 	"settings": {

@@ -1,5 +1,4 @@
-from fast_api_server.user.user_store import UserStore
-
+from user.user_store import UserStore
 
 class UserService:
     def __init__(self):
