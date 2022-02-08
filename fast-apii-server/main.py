@@ -1,19 +1,21 @@
 import os
 from typing import List, Optional
+
+from opentelemetry.instrumentation.digma import DigmaConfiguration
 from test_instrumentation import FastApiTestInstrumentation, OpenTelemetryTimeOverride
 import git
 import uvicorn as uvicorn
 from dotenv import load_dotenv
 from fastapi import FastAPI, Request
 from fastapi.params import Query
+from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 from opentelemetry.instrumentation.logging import LoggingInstrumentor
 from opentelemetry.instrumentation.requests import RequestsInstrumentor
 from opentelemetry.propagators.b3 import B3Format
-from opentelemetry.sdk.resources import Resource
+from opentelemetry.sdk.resources import Resource, SERVICE_NAME
 from opentelemetry.sdk.trace import TracerProvider, Span
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
-from opentelemetry.exporter.digma import DigmaExporter
 from opentelemetry.propagate import set_global_textmap
 from flows import D, C, recursive_call
 from opentelemetry import trace
@@ -25,41 +27,32 @@ load_dotenv()
 
 repo = git.Repo(search_parent_directories=True)
 os.environ['GIT_COMMIT_ID'] = repo.head.object.hexsha
-resource = Resource(attributes={"service.name": "fastapi-blog"})
+os.environ.setdefault("DIGMA_CONFIG_MODULE", "digma_config")  # must be set by customer
+
+digma_conf = DigmaConfiguration()\
+    .trace_module('fastapi')\
+    .trace_module('requests')
+
+resource = Resource.create(attributes={SERVICE_NAME: 'server_ms'}).merge(digma_conf.resource)
 trace.set_tracer_provider(TracerProvider(resource=resource))
-tracer = trace.get_tracer(__name__)
+
+otlp_exporter = OTLPSpanExporter(endpoint="http://localhost:5050", insecure=True)
+span_processor = BatchSpanProcessor(otlp_exporter)
+trace.get_tracer_provider().add_span_processor(span_processor)
 
 # when project root is not part of the PythonPath.
 # PythonPath should be the path to your project
 # sys.path.append(dirname(dirname(abspath(__file__))))
-os.environ.setdefault("DIGMA_CONFIG_MODULE", "digma_config")  # must be set by customer
-digma_exporter = DigmaExporter(pre_processors=[OpenTelemetryTimeOverride.test_overrides])
-user_service = UserService()
 
-trace.get_tracer_provider().add_span_processor(
-    BatchSpanProcessor(digma_exporter, max_export_batch_size=10))
-
-otel_trace = os.environ.get("OTELE_TRACE", None)
-if otel_trace == 'True':
-    from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import (
-        OTLPSpanExporter,
-    )
-
-    otlp_exporter = OTLPSpanExporter(endpoint="http://localhost:4317", insecure=True)
-    trace.get_tracer_provider().add_span_processor(
-        BatchSpanProcessor(otlp_exporter)
-    )
-
-LoggingInstrumentor().instrument(set_logging_format=True)
 app = FastAPI()
-
-FastAPIInstrumentor.instrument_app(app, server_request_hook=FastApiTestInstrumentation.server_request_hook,
+LoggingInstrumentor().instrument(set_logging_format=True)
+RequestsInstrumentor().instrument()
+FastAPIInstrumentor.instrument_app(app,
+                                   server_request_hook=FastApiTestInstrumentation.server_request_hook,
                                    client_request_hook=FastApiTestInstrumentation.client_request_hook,
                                    client_response_hook=FastApiTestInstrumentation.client_response_hook)
-RequestsInstrumentor().instrument()
 
 tracer = trace.get_tracer(__name__)
-
 user_service = UserService()
 
 

@@ -3,13 +3,16 @@ import uvicorn
 from dotenv import load_dotenv
 import git
 import os
+
+from opentelemetry.instrumentation.digma import DigmaConfiguration
 from test_instrumentation import FastApiTestInstrumentation, OpenTelemetryTimeOverride
 from typing import  Optional
 from fastapi import FastAPI, Header
+from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 from opentelemetry.instrumentation.logging import LoggingInstrumentor
 from opentelemetry.instrumentation.requests import RequestsInstrumentor
-from opentelemetry.sdk.resources import Resource
+from opentelemetry.sdk.resources import Resource, SERVICE_NAME
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from opentelemetry import trace
@@ -26,23 +29,17 @@ path = os.path.abspath(os.path.dirname(__file__))
 os.environ.setdefault("PROJECT_ROOT", path )
 os.environ.setdefault("DIGMA_CONFIG_MODULE", "digma_config")  # must be set by customer
 
-resource = Resource(attributes={"service.name": "client_ms"})
+digma_conf = DigmaConfiguration()\
+    .trace_module('fastapi')\
+    .trace_module('requests')
+
+resource = Resource.create(attributes={SERVICE_NAME: 'client_ms'}).merge(digma_conf.resource)
 trace.set_tracer_provider(TracerProvider(resource=resource))
-digma_exporter = DigmaExporter(pre_processors=[OpenTelemetryTimeOverride.test_overrides])
-trace.get_tracer_provider().add_span_processor(
-    BatchSpanProcessor(digma_exporter, max_export_batch_size=10)
-)
 
-otel_trace = os.environ.get("OTELE_TRACE", None)
-if otel_trace == 'True':
-    from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import (
-        OTLPSpanExporter,
-    )
+otlp_exporter = OTLPSpanExporter(endpoint="http://localhost:5050", insecure=True)
+span_processor = BatchSpanProcessor(otlp_exporter)
+trace.get_tracer_provider().add_span_processor(span_processor)
 
-    otlp_exporter = OTLPSpanExporter(endpoint="http://localhost:4317", insecure=True)
-    trace.get_tracer_provider().add_span_processor(
-        BatchSpanProcessor(otlp_exporter)
-    )
 app = FastAPI()
 FastAPIInstrumentor.instrument_app(app, server_request_hook=FastApiTestInstrumentation.server_request_hook)
 RequestsInstrumentor().instrument()
