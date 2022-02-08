@@ -55,8 +55,8 @@ def popuplate_data():
 
 
     TestHelpers\
-        .create_errors_over_timespan(scanarios.multi_ms, 'Generating multi-service error', 100,
-                                         lambda i: TestHelpers.get_timestamp_header(initial_time=four_days_ago,
+        .create_errors_over_timespan(scanarios.multi_ms, 'Generating multi-service error', 50,
+                                         lambda i: TestHelpers.get_timestamp_header(initial_time=one_days_ago,
                                                                                 interval=one_minute,
                                                                                 iteration=i))
     TestHelpers\
@@ -66,12 +66,12 @@ def popuplate_data():
                                                                                 iteration=i))
 
     TestHelpers\
-        .create_errors_over_timespan(scanarios.normal_error, 'Generating normal error', 2000,
+        .create_errors_over_timespan(scanarios.handled_exception(), 'Generating normal error', 20,
                                      lambda i: TestHelpers.get_timestamp_header(initial_time=two_days_ago,
-                                                                                interval=one_minute,
+                                                                                interval=one_hour,
                                                                                 iteration=i))
     TestHelpers\
-        .create_errors_over_timespan(scanarios.complex_exception, 'Generating complex error', 7,
+        .create_errors_over_timespan(scanarios.complex_exception, 'Generating complex error', 2,
                                      lambda i: TestHelpers.get_timestamp_header(initial_time=seven_days_ago,
                                                                                 interval=one_day,
                                                                                 iteration=i))
@@ -89,7 +89,7 @@ def popuplate_data():
 
     TestHelpers \
         .create_errors_over_timespan(scanarios.double_multi_ms, 'Generating double ms error', 200,
-                                     lambda i: TestHelpers.get_timestamp_header(initial_time=four_days_ago,
+                                     lambda i: TestHelpers.get_timestamp_header(initial_time=one_days_ago,
                                                                                 interval=one_minute,
                                                                                 iteration=i))
 
