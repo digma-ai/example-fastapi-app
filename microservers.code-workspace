@@ -18,6 +18,7 @@
 	],
 	"settings": {
 		"digma.environment": "DEV",
-		"digma.hideFramesOutsideWorkspace": true
+		"digma.hideFramesOutsideWorkspace": true,
+		"digma.sourceControl": "Git"
 	}
 }
