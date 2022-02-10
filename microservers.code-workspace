@@ -14,6 +14,9 @@
 		},
 		{
 			"path": "test_instrumentation_helpers"
+		},
+		{
+			"path": "common"
 		}
 	],
 	"settings": {

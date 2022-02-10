@@ -27,11 +27,8 @@ try:
 except:
     pass
 
-path = os.path.abspath(os.path.dirname(__file__))
-os.environ.setdefault(PROJECT_ROOT, path)
 digma_conf = DigmaConfiguration()\
-    .trace_module('fastapi')\
-    .trace_module('requests')
+    .trace_this_package()
 
 resource = Resource.create(attributes={SERVICE_NAME: 'server-ms'}).merge(digma_conf.resource)
 provider = TracerProvider(resource=resource)
