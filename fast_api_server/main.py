@@ -84,7 +84,6 @@ async def validate(user_ids: Optional[List[str]] = Query(None)):
 
     return "okay"
 
-
 @app.get("/validateuser")
 async def validate_user():
     try:

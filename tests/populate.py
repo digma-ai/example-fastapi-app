@@ -55,14 +55,14 @@ def popuplate_data():
 
 
     TestHelpers\
-        .create_errors_over_timespan(scanarios.multi_ms, 'Generating multi-service error', 100,
+        .create_errors_over_timespan(scanarios.multi_ms, 'Generating multi-service error', 3000,
                                          lambda i: TestHelpers.get_timestamp_header(initial_time=four_days_ago,
                                                                                 interval=one_minute,
                                                                                 iteration=i))
     TestHelpers\
-        .create_errors_over_timespan(scanarios.normal_error, 'Generating normal error', 20,
+        .create_errors_over_timespan(scanarios.normal_error, 'Generating normal error', 3000,
                                      lambda i: TestHelpers.get_timestamp_header(initial_time=four_days_ago,
-                                                                                interval=one_hour,
+                                                                                interval=one_minute,
                                                                                 iteration=i))
 
     TestHelpers\
@@ -76,19 +76,19 @@ def popuplate_data():
                                                                                 interval=one_day,
                                                                                 iteration=i))
     TestHelpers \
-        .create_errors_over_timespan(scanarios.rethrown_exception, 'Generating rethrown error', 100,
+        .create_errors_over_timespan(scanarios.rethrown_exception, 'Generating rethrown error', 200,
                                      lambda i: TestHelpers.get_timestamp_header(initial_time=two_days_ago,
                                                                                 interval=one_minute,
                                                                                 iteration=i))
 
     TestHelpers \
-        .create_errors_over_timespan(scanarios.rethrown_exception, 'Generating rethrown error', 1000,
+        .create_errors_over_timespan(scanarios.rethrown_exception, 'Generating rethrown error', 2000,
                                      lambda i: TestHelpers.get_timestamp_header(initial_time=one_days_ago,
                                                                                 interval=one_minute,
                                                                                 iteration=i))
 
     TestHelpers \
-        .create_errors_over_timespan(scanarios.double_multi_ms, 'Generating double ms error', 200,
+        .create_errors_over_timespan(scanarios.double_multi_ms, 'Generating double ms error', 4000,
                                      lambda i: TestHelpers.get_timestamp_header(initial_time=four_days_ago,
                                                                                 interval=one_minute,
                                                                                 iteration=i))
