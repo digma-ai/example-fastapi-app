@@ -13,10 +13,8 @@ from opentelemetry.sdk.resources import Resource, SERVICE_NAME
 from opentelemetry.sdk.trace import TracerProvider
 
 from common import validators
-from conf import PROJECT_ROOT
-from conf.environment_variables import GIT_COMMIT_ID, DIGMA_CONFIG_MODULE
 from opentelemetry import trace
-from opentelemetry.instrumentation.digma import DigmaConfiguration
+from digma.configuration import Configuration
 from test_instrumentation_helpers.test_instrumentation import FastApiTestInstrumentation
 
 
@@ -24,11 +22,11 @@ load_dotenv()
 
 try:
     repo = git.Repo(search_parent_directories=True)
-    os.environ[GIT_COMMIT_ID] = repo.head.object.hexsha
+    os.environ['GIT_COMMIT_ID'] = repo.head.object.hexsha
 except:
     pass
 
-digma_conf = DigmaConfiguration()\
+digma_conf = Configuration()\
     .trace_this_package(root='../')\
     .trace_package('common')
 
