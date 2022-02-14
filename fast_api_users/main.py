@@ -35,7 +35,7 @@ except:
 # trace.set_tracer_provider(provider)
 
 opentelemetry_init(service_name='users-ms',
-                   digma_conf=Configuration().trace_this_package(root="../"),
+                   digma_conf=Configuration().trace_this_package(),
                    digma_endpoint="http://localhost:5050")
 
 app = FastAPI()

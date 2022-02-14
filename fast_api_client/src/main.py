@@ -30,7 +30,7 @@ except:
 
 
 opentelemetry_init(service_name='client-ms',
-                   digma_conf=Configuration().trace_this_package(root='../../').trace_package('common'),
+                   digma_conf=Configuration().trace_this_package(root='../').trace_package('common'),
                    digma_endpoint="http://localhost:5050")
 
 # digma_conf = Configuration()\

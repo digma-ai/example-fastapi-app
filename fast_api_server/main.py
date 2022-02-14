@@ -32,7 +32,7 @@ except:
 
 print(f'getcwd: {os.getcwd()}')
 opentelemetry_init(service_name='server-ms',
-                   digma_conf=Configuration().trace_this_package(root="../"),
+                   digma_conf=Configuration().trace_this_package(),
                    digma_endpoint="http://localhost:5050")
 
 # digma_conf = Configuration()\
