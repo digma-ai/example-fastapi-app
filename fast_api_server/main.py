@@ -6,20 +6,17 @@ import uvicorn as uvicorn
 from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.params import Query
+from opentelemetry import trace
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 from opentelemetry.instrumentation.logging import LoggingInstrumentor
 from opentelemetry.instrumentation.requests import RequestsInstrumentor
-from opentelemetry.sdk.resources import Resource, SERVICE_NAME
-from opentelemetry.sdk.trace import TracerProvider
 
 from digma_instrumentation.configuration import Configuration
-from fast_api_server.user.user_service import UserService
-from fast_api_server.user_validation import UserValidator
-from flows import recursive_call
-from opentelemetry import trace
-from test_instrumentation_helpers.test_instrumentation import FastApiTestInstrumentation
 from digma_instrumentation.opentelemetry_utils import opentelemetry_init
-
+from user.user_service import UserService
+from user_validation import UserValidator
+from flows import recursive_call
+from test_instrumentation_helpers.test_instrumentation import FastApiTestInstrumentation
 
 load_dotenv()
 
