@@ -24,7 +24,8 @@ async def validate(request: web.Request):
 
 
 opentelemetry_init(service_name='providers',
-                   digma_conf=Configuration().trace_this_package())
+                   digma_conf=Configuration().trace_this_package(),
+                   digma_endpoint="http://localhost:5050")
 
 app = web.Application(middlewares=[error_middleware, opentelemetry_aiohttp_middleware(__name__)])
 app.add_routes([web.get('/', root),
