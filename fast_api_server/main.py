@@ -11,10 +11,9 @@ from opentelemetry.instrumentation.logging import LoggingInstrumentor
 from opentelemetry.instrumentation.requests import RequestsInstrumentor
 from opentelemetry.sdk.resources import Resource, SERVICE_NAME
 from opentelemetry.sdk.trace import TracerProvider
-from conf.environment_variables import GIT_COMMIT_ID
 from flows import recursive_call
 from opentelemetry import trace
-from digma.configuration import Configuration
+from digma_instrumentation.configuration import Configuration
 from test_instrumentation_helpers.test_instrumentation import FastApiTestInstrumentation
 from user.user_service import UserService
 from user_validation import UserValidator
@@ -23,7 +22,7 @@ load_dotenv()
 
 try:
     repo = git.Repo(search_parent_directories=True)
-    os.environ[GIT_COMMIT_ID] = repo.head.object.hexsha
+    os.environ['GIT_COMMIT_ID'] = repo.head.object.hexsha
 except:
     pass
 

@@ -1,7 +1,8 @@
+import os
 from aiohttp import web
 
-from digma.configuration import Configuration
-from digma.opentelemetry_utils import opentelemetry_init, opentelemetry_aiohttp_middleware
+from digma_instrumentation.configuration import Configuration
+from digma_instrumentation.opentelemetry_utils import opentelemetry_init, opentelemetry_aiohttp_middleware
 
 
 @web.middleware
@@ -22,10 +23,11 @@ async def root(request: web.Request):
 async def validate(request: web.Request):
     raise Exception('Bad validation error!!!')
 
-
+os.environ['ENVIRONMENT'] = 'dryrun'
+conf = Configuration().trace_this_package()
 opentelemetry_init(service_name='providers',
-                   digma_conf=Configuration().trace_this_package(),
-                   digma_endpoint="http://localhost:5050")
+                   digma_conf=conf,
+                   digma_endpoint="http://34.254.64.15:5050")
 
 app = web.Application(middlewares=[error_middleware, opentelemetry_aiohttp_middleware(__name__)])
 app.add_routes([web.get('/', root),

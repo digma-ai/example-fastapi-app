@@ -14,7 +14,7 @@ from opentelemetry.sdk.trace import TracerProvider
 
 from common import validators
 from opentelemetry import trace
-from digma.configuration import Configuration
+from digma_instrumentation.configuration import Configuration
 from test_instrumentation_helpers.test_instrumentation import FastApiTestInstrumentation
 
 

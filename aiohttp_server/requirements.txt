@@ -1,1 +1,2 @@
 aiohttp
+opentelemetry-exporter-digma==0.0.11
