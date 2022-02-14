@@ -1,7 +1,7 @@
 from aiohttp import web
 
-from digma.configuration import Configuration
-from digma.opentelemetry_utils import opentelemetry_init, opentelemetry_aiohttp_middleware
+from digma_instrumentation.configuration import Configuration
+from digma_instrumentation.opentelemetry_utils import opentelemetry_init, opentelemetry_aiohttp_middleware
 
 
 @web.middleware

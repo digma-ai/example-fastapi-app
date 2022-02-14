@@ -14,8 +14,10 @@ from opentelemetry.sdk.trace import TracerProvider
 
 from common import validators
 from opentelemetry import trace
-from digma.configuration import Configuration
+
+from digma_instrumentation.configuration import Configuration
 from test_instrumentation_helpers.test_instrumentation import FastApiTestInstrumentation
+from digma_instrumentation.opentelemetry_utils import opentelemetry_init
 
 
 load_dotenv()
@@ -26,14 +28,19 @@ try:
 except:
     pass
 
-digma_conf = Configuration()\
-    .trace_this_package(root='../')\
-    .trace_package('common')
 
-resource = Resource.create(attributes={SERVICE_NAME: 'client-ms'}).merge(digma_conf.resource)
-provider = TracerProvider(resource=resource)
-provider.add_span_processor(digma_conf.span_processor)
-trace.set_tracer_provider(provider)
+opentelemetry_init(service_name='client-ms',
+                   digma_conf=Configuration().trace_this_package(root='../../').trace_package('common'),
+                   digma_endpoint="http://localhost:5050")
+
+# digma_conf = Configuration()\
+#     .trace_this_package(root='../')\
+#     .trace_package('common')
+
+# resource = Resource.create(attributes={SERVICE_NAME: 'client-ms'}).merge(digma_conf.resource)
+# provider = TracerProvider(resource=resource)
+# provider.add_span_processor(digma_conf.span_processor)
+# trace.set_tracer_provider(provider)
 
 app = FastAPI()
 

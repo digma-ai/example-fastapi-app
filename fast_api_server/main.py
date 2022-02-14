@@ -11,29 +11,37 @@ from opentelemetry.instrumentation.logging import LoggingInstrumentor
 from opentelemetry.instrumentation.requests import RequestsInstrumentor
 from opentelemetry.sdk.resources import Resource, SERVICE_NAME
 from opentelemetry.sdk.trace import TracerProvider
-from conf.environment_variables import GIT_COMMIT_ID
+
+from digma_instrumentation.configuration import Configuration
+from fast_api_server.user.user_service import UserService
+from fast_api_server.user_validation import UserValidator
 from flows import recursive_call
 from opentelemetry import trace
-from digma.configuration import Configuration
 from test_instrumentation_helpers.test_instrumentation import FastApiTestInstrumentation
-from user.user_service import UserService
-from user_validation import UserValidator
+from digma_instrumentation.opentelemetry_utils import opentelemetry_init
+
 
 load_dotenv()
 
 try:
     repo = git.Repo(search_parent_directories=True)
-    os.environ[GIT_COMMIT_ID] = repo.head.object.hexsha
+    os.environ['GIT_COMMIT_ID'] = repo.head.object.hexsha
 except:
     pass
 
-digma_conf = Configuration()\
-    .trace_this_package()
 
-resource = Resource.create(attributes={SERVICE_NAME: 'server-ms'}).merge(digma_conf.resource)
-provider = TracerProvider(resource=resource)
-provider.add_span_processor(digma_conf.span_processor)
-trace.set_tracer_provider(provider)
+print(f'getcwd: {os.getcwd()}')
+opentelemetry_init(service_name='server-ms',
+                   digma_conf=Configuration().trace_this_package(root="../"),
+                   digma_endpoint="http://localhost:5050")
+
+# digma_conf = Configuration()\
+#     .trace_this_package()
+
+# resource = Resource.create(attributes={SERVICE_NAME: 'server-ms'}).merge(digma_conf.resource)
+# provider = TracerProvider(resource=resource)
+# provider.add_span_processor(digma_conf.span_processor)
+# trace.set_tracer_provider(provider)
 
 app = FastAPI()
 FastAPIInstrumentor.instrument_app(app, server_request_hook=FastApiTestInstrumentation.server_request_hook,
