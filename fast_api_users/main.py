@@ -6,15 +6,13 @@ import requests
 import uvicorn
 from dotenv import load_dotenv
 from fastapi import FastAPI, Header
+from opentelemetry import trace
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 from opentelemetry.instrumentation.logging import LoggingInstrumentor
 from opentelemetry.instrumentation.requests import RequestsInstrumentor
-from opentelemetry.sdk.resources import Resource, SERVICE_NAME
-from opentelemetry.sdk.trace import TracerProvider
 
-
-from opentelemetry import trace
 from digma_instrumentation.configuration import Configuration
+from digma_instrumentation.opentelemetry_utils import opentelemetry_init
 from test_instrumentation_helpers.test_instrumentation import FastApiTestInstrumentation
 
 load_dotenv()
@@ -25,13 +23,17 @@ try:
 except:
     pass
 
-digma_conf = Configuration()\
-    .trace_this_package()
+# digma_conf = Configuration()\
+#     .trace_this_package()
 
-resource = Resource.create(attributes={SERVICE_NAME: 'users-ms'}).merge(digma_conf.resource)
-provider = TracerProvider(resource=resource)
-provider.add_span_processor(digma_conf.span_processor)
-trace.set_tracer_provider(provider)
+# resource = Resource.create(attributes={SERVICE_NAME: 'users-ms'}).merge(digma_conf.resource)
+# provider = TracerProvider(resource=resource)
+# provider.add_span_processor(digma_conf.span_processor)
+# trace.set_tracer_provider(provider)
+
+opentelemetry_init(service_name='users-ms',
+                   digma_conf=Configuration().trace_this_package(),
+                   digma_endpoint="http://localhost:5050")
 
 app = FastAPI()
 
