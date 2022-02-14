@@ -1,0 +1,34 @@
+from aiohttp import web
+
+from digma.configuration import Configuration
+from digma.opentelemetry_utils import opentelemetry_init, opentelemetry_aiohttp_middleware
+
+
+@web.middleware
+async def error_middleware(request, handler):
+    try:
+        return await handler(request)
+    except Exception as e:
+        return web.json_response(text='Internal Server Error: '+str(e), status=500)
+
+
+async def root(request: web.Request):
+    name = request.rel_url.query.get('name', "Anonymous")
+    if name == 'asaf':
+        raise Exception('Bad name error!!!')
+    return web.Response(text='All good')
+
+
+async def validate(request: web.Request):
+    raise Exception('Bad validation error!!!')
+
+
+opentelemetry_init(service_name='providers',
+                   digma_conf=Configuration().trace_this_package())
+
+app = web.Application(middlewares=[error_middleware, opentelemetry_aiohttp_middleware(__name__)])
+app.add_routes([web.get('/', root),
+                web.get('/validate', validate)])
+
+if __name__ == '__main__':
+    web.run_app(app, port=8004)
