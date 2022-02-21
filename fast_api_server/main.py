@@ -29,7 +29,8 @@ except:
 
 opentelemetry_init(service_name='server-ms',
                    digma_conf=Configuration().trace_this_package(),
-                   digma_endpoint="http://localhost:5050")
+                   digma_endpoint="http://localhost:5050",
+                   test=True)
 
 # digma_conf = Configuration()\
 #     .trace_this_package()

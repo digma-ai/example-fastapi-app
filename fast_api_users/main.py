@@ -33,7 +33,8 @@ except:
 
 opentelemetry_init(service_name='users-ms',
                    digma_conf=Configuration().trace_this_package(),
-                   digma_endpoint="http://localhost:5050")
+                   digma_endpoint="http://localhost:5050",
+                   test=True)
 
 app = FastAPI()
 
