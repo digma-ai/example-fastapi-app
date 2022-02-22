@@ -20,11 +20,15 @@
 		},
 		{
 			"path": "aiohttp_server"
+		},
+		{
+			"path": "dotnet_api_example"
 		}
 	],
 	"settings": {
 		"digma.environment": "DEV",
 		"digma.hideFramesOutsideWorkspace": true,
-		"digma.sourceControl": "Git"
+		"digma.sourceControl": "Git",
+		"torque.activeProfile": "default"
 	}
 }
