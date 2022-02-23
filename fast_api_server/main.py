@@ -1,4 +1,5 @@
 import os
+import random
 from typing import List, Optional
 
 import git
@@ -25,7 +26,6 @@ try:
     os.environ['GIT_COMMIT_ID'] = repo.head.object.hexsha
 except:
     pass
-
 
 opentelemetry_init(service_name='server-ms',
                    digma_conf=Configuration().trace_this_package(),
@@ -105,6 +105,11 @@ async def flow7():
 @app.get("/flow8")  # unhandled error
 async def flow8():
     recursive_call()
+
+
+@app.get("/exception_generator")
+async def chaos():
+    raise type(f'Exception{random.randint(0, 100000)}', (Exception,), {})
 
 
 if __name__ == "__main__":
