@@ -21,9 +21,10 @@ Console.WriteLine("project root: " + projectRoot);
 Console.WriteLine("workingDirectory: " + workingDirectory);
 
 string commitHash = "";
-if (LibGit2Sharp.Repository.IsValid(projectRoot))
+string repositoryUrl = projectRoot+ "/../../";
+if (LibGit2Sharp.Repository.IsValid(repositoryUrl))
 {
-    commitHash = new LibGit2Sharp.Repository(projectRoot).Head.Tip.Sha;
+    commitHash = new LibGit2Sharp.Repository(repositoryUrl).Head.Tip.Sha;
 }
 
 builder.Services.AddOpenTelemetryTracing((builder) => builder
