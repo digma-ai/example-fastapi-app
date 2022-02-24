@@ -20,8 +20,9 @@ class TestHelpers:
         new_time = datetime.datetime.now() + initial_time + (interval * iteration)
         if new_time > datetime.datetime.now():
             new_time = datetime.datetime.now()
-        timestamp = str(int(datetime.datetime.timestamp(new_time)) * 1000000000)
+        timestamp = str(int(datetime.datetime.timestamp(new_time) * 1000000000))
         return {'x-simulated-time': timestamp}
+
 
 class OpenTelemetryTimeOverride:
 
