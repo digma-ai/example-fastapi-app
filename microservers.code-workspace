@@ -29,6 +29,7 @@
 		"digma.environment": "DEV",
 		"digma.hideFramesOutsideWorkspace": true,
 		"digma.sourceControl": "Git",
-		"torque.activeProfile": "default"
+		"torque.activeProfile": "default",
+		"prettier.tabWidth": 4
 	}
 }
