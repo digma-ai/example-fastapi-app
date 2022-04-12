@@ -8,3 +8,4 @@ opentelemetry-instrumentation-fastapi==0.28.b1
 opentelemetry-instrumentation-requests==0.28.b1
 opentelemetry-instrumentation-logging==0.28.b1
 opentelemetry-exporter-digma==0.0.14
+aio-pika

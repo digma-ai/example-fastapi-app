@@ -9,10 +9,7 @@ public class TransferController : ControllerBase
 {
     private static readonly ActivitySource Activity = new(nameof(TransferController));
 
-    private static readonly string[] Summaries = new[]
-    {
-        "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-    };
+
 
     private readonly ILogger<TransferController> _logger;
 

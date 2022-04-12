@@ -1,11 +1,15 @@
 import os
 from typing import Optional
 
+import aio_pika
 import git
 import requests
 import uvicorn
+from aio_pika import connect
 from dotenv import load_dotenv
 from fastapi import FastAPI, Header, Query
+from starlette import status
+
 from opentelemetry import trace
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 from opentelemetry.instrumentation.logging import LoggingInstrumentor
@@ -55,13 +59,44 @@ async def root(x_simulated_time: Optional[str] = Header(None)):
     print(f"in span {trace.get_current_span().get_span_context().span_id}")
     with tracer.start_as_current_span("admin console"):
         print(f"in span {trace.get_current_span().get_span_context().span_id}")
-        response = requests.get('http://localhost:8000/', headers=headers)
+        response = requests.get('http://localhost:8000/login', headers=headers)
+        response.raise_for_status()
+
+
+@app.get("/login")
+async def validate(x_simulated_time: Optional[str] = Header(None)):
+    headers = {}
+    if x_simulated_time:
+        headers['x-simulated-time'] = x_simulated_time
+    print(f"in span {trace.get_current_span().get_span_context().span_id}")
+    with tracer.start_as_current_span("admin console"):
+        print(f"in span {trace.get_current_span().get_span_context().span_id}")
+        response = requests.get('http://localhost:8000/login', headers=headers)
         response.raise_for_status()
 
 
 @app.get("/validate")
 async def validate(username=Query(None)):
     validators.validate_user(username)
+
+@app.get("/process")
+async def process():
+    connection = await connect("amqp://admin:guest@localhost/")
+
+    channel: aio_pika.abc.AbstractChannel = await connection.channel()
+
+    queue = await channel.declare_queue("TransationProcessing")
+
+    await channel.default_exchange.publish(
+        aio_pika.Message(
+            body='Hello {}'.format(queue.name).encode()
+        ),
+        routing_key=queue.name
+    )
+
+    await connection.close()
+
+    return status.HTTP_200_OK
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8001)
