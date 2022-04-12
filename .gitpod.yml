@@ -1,4 +1,4 @@
-workspaceLocation: "./fast_api_server"
+workspaceLocation: "fast_api_server"
 vscode:
   extensions:
     - digma.digma
