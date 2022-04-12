@@ -48,12 +48,14 @@ public class RunWebApp
                     .SetResourceBuilder(
                     ResourceBuilder.CreateDefault()
                         .AddService(serviceName: serviceName, serviceVersion: serviceVersion)
-                        .AddDigmaAttributes(configure => { }))
+                        .AddDigmaAttributes(configure => { configure.Environment = "DEV";}))
                     .AddOtlpExporter(c => {
                         c.Endpoint = new Uri("http://localhost:5050");
                     })
                     .AddSource(serviceName)
                 );
+            builder.Services.AddEndpointMonitoring();
+            
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
