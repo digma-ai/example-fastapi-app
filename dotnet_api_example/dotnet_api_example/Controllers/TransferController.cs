@@ -23,9 +23,6 @@ public class TransferController : ControllerBase
     {
         using (var activity = Activity.StartActivity("Injest OTEL Data", ActivityKind.Producer)){
             throw new Exception("Blah");
-
         }
-
     }
 }
-
