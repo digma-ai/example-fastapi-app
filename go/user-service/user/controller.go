@@ -23,7 +23,7 @@ func NewUserController(service Service, tracer trace.Tracer) UserController {
 
 func (controller *UserController) Get(w http.ResponseWriter, req *http.Request) {
 	_, span := controller.tracer.Start(req.Context(), "controller::Get")
-	defer span.End()
+	defer span.End(trace.WithStackTrace(true))
 
 	userId := req.URL.Query().Get("id")
 	user, _ := controller.service.Get(userId)
@@ -32,7 +32,7 @@ func (controller *UserController) Get(w http.ResponseWriter, req *http.Request) 
 
 func (controller *UserController) Add(w http.ResponseWriter, req *http.Request) {
 	_, span := controller.tracer.Start(req.Context(), "controller::Add")
-	defer span.End()
+	defer span.End(trace.WithStackTrace(true))
 	var user User
 
 	if err := json.NewDecoder(req.Body).Decode(&user); err != nil {
@@ -57,7 +57,7 @@ func (controller *UserController) Add(w http.ResponseWriter, req *http.Request) 
 
 func (controller *UserController) All(w http.ResponseWriter, req *http.Request) {
 	_, span := controller.tracer.Start(req.Context(), "controller::All")
-	defer span.End()
+	defer span.End(trace.WithStackTrace(true))
 	users, _ := controller.service.List()
 	setResponse(w, users, http.StatusOK)
 }
