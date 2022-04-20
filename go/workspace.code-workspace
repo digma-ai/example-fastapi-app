@@ -1,0 +1,11 @@
+{
+	"folders": [
+		{
+			"path": "authentication-service"
+		},
+		{
+			"path": "user-service"
+		}
+	],
+	"settings": {}
+}
