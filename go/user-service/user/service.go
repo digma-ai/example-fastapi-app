@@ -43,6 +43,7 @@ func (u *userService) Get(id string) (User, error) {
 	if !found {
 		panic(ErrUserNotFound)
 	}
+
 	return value, nil
 }
 
