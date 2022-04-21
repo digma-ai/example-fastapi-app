@@ -11,9 +11,8 @@ from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 from opentelemetry.instrumentation.logging import LoggingInstrumentor
 from opentelemetry.instrumentation.requests import RequestsInstrumentor
 
-from digma_instrumentation.configuration import Configuration
-from digma_instrumentation.opentelemetry_utils import opentelemetry_init
-from test_instrumentation_helpers.test_instrumentation import FastApiTestInstrumentation
+from opentelemetry.instrumentation.digma import digma_opentelmetry_boostrap, DigmaConfiguration
+from test_instrumentation.test_instrumentation import FastApiTestInstrumentation
 
 load_dotenv()
 
@@ -23,18 +22,10 @@ try:
 except:
     pass
 
-# digma_conf = Configuration()\
-#     .trace_this_package()
 
-# resource = Resource.create(attributes={SERVICE_NAME: 'users-ms'}).merge(digma_conf.resource)
-# provider = TracerProvider(resource=resource)
-# provider.add_span_processor(digma_conf.span_processor)
-# trace.set_tracer_provider(provider)
-
-opentelemetry_init(service_name='users-ms',
-                   digma_conf=Configuration().trace_this_package(),
-                   digma_endpoint="http://localhost:5050",
-                   test=True)
+digma_opentelmetry_boostrap(service_name='users-ms',
+                            configuration=DigmaConfiguration().trace_this_package(),
+                            digma_backend="http://localhost:5050")
 
 app = FastAPI()
 

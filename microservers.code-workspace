@@ -13,9 +13,6 @@
 			"path": "fast_api_users"
 		},
 		{
-			"path": "test_instrumentation_helpers"
-		},
-		{
 			"path": "common"
 		},
 		{

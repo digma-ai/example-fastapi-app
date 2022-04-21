@@ -1,5 +1,5 @@
-from fast_api_server.user.user_store import UserStore
-from fast_api_server.user_validation import UserValidator
+from user.user_store import UserStore
+from user_validation import UserValidator
 from opentelemetry import trace
 
 tracer = trace.get_tracer(__name__)

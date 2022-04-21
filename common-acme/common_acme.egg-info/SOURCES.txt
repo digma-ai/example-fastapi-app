@@ -1,0 +1,6 @@
+README.md
+setup.py
+common_acme.egg-info/PKG-INFO
+common_acme.egg-info/SOURCES.txt
+common_acme.egg-info/dependency_links.txt
+common_acme.egg-info/top_level.txt

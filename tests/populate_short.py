@@ -2,7 +2,6 @@ import datetime
 import time
 import requests
 
-from test_instrumentation_helpers.test_instrumentation import TestHelpers
 
 
 class DataScenarios:
@@ -77,7 +76,7 @@ def popuplate_data():
     # iterate_over_error(scanarios.normal_error, "running", 50)
     # iterate_over_error(scanarios.rethrown_exception, "running", 30)
 
-    iterate_over_error(scanarios.rethrown_exception, "running", 3)
+    iterate_over_error(scanarios.rethrown_exception, "running", 13)
 
 
 
