@@ -1,9 +1,9 @@
 ﻿<Properties StartupConfiguration="{698D55F9-6CD0-4D71-97E0-A8587A250B61}|Default">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
-  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MultiItemStartupConfigurations />
   <MonoDevelop.Ide.Workbench ActiveDocument="dotnet_api_example/Controllers/TransferController.cs">
     <Files>
       <File FileName="dotnet_api_example/Program.cs" Line="9" Column="16" />
@@ -15,10 +15,8 @@
       <Pad Id="ProjectPad">
         <State name="__root__">
           <Node name="dotnet_api_example" expanded="True">
-            <Node name="dotnet_api_example" expanded="True">
-              <Node name="Controllers" expanded="True">
-                <Node name="TransferController.cs" selected="True" />
-              </Node>
+            <Node name="dotnet_api_example" expanded="True" selected="True">
+              <Node name="Controllers" expanded="True" />
             </Node>
           </Node>
         </State>
@@ -28,6 +26,6 @@
       </Pad>
     </Pads>
   </MonoDevelop.Ide.Workbench>
-  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MultiItemStartupConfigurations />
   <MonoDevelop.Ide.ItemProperties.dotnet__api__example PreferredExecutionTarget="/Applications/Google Chrome.app" />
 </Properties>

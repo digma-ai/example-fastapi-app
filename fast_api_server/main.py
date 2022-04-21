@@ -9,19 +9,19 @@ from fastapi import FastAPI
 from fastapi.params import Query
 from database_validation import Permisson
 
-from fast_api_server.database_validation import DomainValidator
-from fast_api_server.root_api_response import RootApiResponse
+from database_validation import DomainValidator
+from opentelemetry.instrumentation.digma import opentelemetry_quicksetup, DigmaConfiguration
+from root_api_response import RootApiResponse
 from opentelemetry import trace
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 from opentelemetry.instrumentation.logging import LoggingInstrumentor
 from opentelemetry.instrumentation.requests import RequestsInstrumentor
 
-from digma_instrumentation.configuration import Configuration
-from digma_instrumentation.opentelemetry_utils import opentelemetry_init
+from tests.opentelmetry.instrumentation.digma import opentelemetry_quicksetup_for_testing
+from tests.opentelmetry.instrumentation.digma.test_instrumentation import FastApiTestInstrumentation
 from user.user_service import UserService
 from user_validation import UserValidator
 from flows import recursive_call
-from test_instrumentation_helpers.test_instrumentation import FastApiTestInstrumentation
 
 load_dotenv()
 
@@ -31,10 +31,10 @@ try:
 except:
     pass
 
-opentelemetry_init(service_name='server-ms',
-                   digma_conf=Configuration().trace_this_package(),
-                   digma_endpoint="http://localhost:5050",
-                   test=True)
+lam =  lambda conf: print("hello")
+opentelemetry_quicksetup_for_testing(service_name='server-ms', digma_backend="http://localhost:5050",
+                                     configuration=DigmaConfiguration().trace_this_package()
+                                                           .set_environment('dev'))
 
 # digma_conf = Configuration()\
 #     .trace_this_package()
@@ -55,13 +55,13 @@ tracer = trace.get_tracer(__name__)
 user_service = UserService()
 
 
-@app.get("/users1")
-async def get_users():
-    with tracer.start_as_current_span("user validation"):
-        try:
-            await UserValidator().validate_user(["2", "2", "3", "4"])
-        except:
-            raise Exception("here")
+# @app.get("/users1")
+# async def get_users():
+#     with tracer.start_as_current_span("user validation"):
+#         try:
+#             await UserValidator().validate_user(["2", "2", "3", "4"])
+#         except:
+#             raise Exception("here")
 
 
 @app.get("/users")

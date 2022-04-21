@@ -5,20 +5,19 @@ import aio_pika
 import git
 import requests
 import uvicorn
+from acme.validations import validators
 from aio_pika import connect
 from dotenv import load_dotenv
 from fastapi import FastAPI, Header, Query
-from starlette import status
-
-from opentelemetry import trace
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 from opentelemetry.instrumentation.logging import LoggingInstrumentor
 from opentelemetry.instrumentation.requests import RequestsInstrumentor
+from starlette import status
 
-from common import validators
-from digma_instrumentation.configuration import Configuration
-from digma_instrumentation.opentelemetry_utils import opentelemetry_init
-from test_instrumentation_helpers.test_instrumentation import FastApiTestInstrumentation
+from opentelemetry import trace
+from opentelemetry.instrumentation.digma import DigmaConfiguration
+from tests.opentelmetry.instrumentation.digma import opentelemetry_quicksetup_for_testing
+from tests.opentelmetry.instrumentation.digma.test_instrumentation import FastApiTestInstrumentation
 
 load_dotenv()
 
@@ -29,10 +28,9 @@ except:
     pass
 
 
-opentelemetry_init(service_name='client-ms',
-                   digma_conf=Configuration().trace_this_package(root='../').trace_package('common'),
-                   digma_endpoint="http://localhost:5050",
-                   test=True)
+opentelemetry_quicksetup_for_testing(service_name='client-ms',
+                                     configuration=DigmaConfiguration().trace_this_package(root='../').trace_package('acme'),
+                                     digma_backend="http://localhost:5050")
 
 # digma_conf = Configuration()\
 #     .trace_this_package(root='../')\
@@ -78,6 +76,7 @@ async def validate(x_simulated_time: Optional[str] = Header(None)):
 @app.get("/validate")
 async def validate(username=Query(None)):
     validators.validate_user(username)
+    return True
 
 @app.get("/process")
 async def process():

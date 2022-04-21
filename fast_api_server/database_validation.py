@@ -29,7 +29,8 @@ class DomainValidator:
     async def validate_permissions(self):
 
         with tracer.start_as_current_span("check_db_permission") as span:
-
+            test = __name__
+            print(test)
             permitted = await PermissionsDb.CheckCurrentPer(Permisson.current_context)
             return permitted;
 
@@ -54,7 +55,7 @@ class DomainValidator:
 class PermissionsDb:
     @staticmethod
     async def CheckCurrentPer(arg):
-        asyncio.sleep(4)
+        await asyncio.sleep(4)
         return True
 
 class Permisson:
