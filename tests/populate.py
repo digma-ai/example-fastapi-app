@@ -2,8 +2,7 @@ import datetime
 import time
 import requests
 
-from test_instrumentation.test_instrumentation import TestHelpers
-
+from tests.opentelmetry.instrumentation.digma.helpers import TestHelpers
 
 class DataScenarios:
 
