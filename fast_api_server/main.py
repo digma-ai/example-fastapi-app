@@ -10,15 +10,15 @@ from fastapi.params import Query
 from database_validation import Permisson
 
 from database_validation import DomainValidator
-from opentelemetry.instrumentation.digma import opentelemetry_quicksetup, DigmaConfiguration
+from opentelemetry.instrumentation.digma import digma_opentelmetry_boostrap, DigmaConfiguration
 from root_api_response import RootApiResponse
 from opentelemetry import trace
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 from opentelemetry.instrumentation.logging import LoggingInstrumentor
 from opentelemetry.instrumentation.requests import RequestsInstrumentor
 
-from tests.opentelmetry.instrumentation.digma import opentelemetry_quicksetup_for_testing
-from tests.opentelmetry.instrumentation.digma.test_instrumentation import FastApiTestInstrumentation
+from tests.opentelmetry.instrumentation.digma import digma_opentelemetry_bootstrap_for_testing
+from tests.opentelmetry.instrumentation.digma.helpers import FastApiTestInstrumentation
 from user.user_service import UserService
 from user_validation import UserValidator
 from flows import recursive_call
@@ -32,9 +32,10 @@ except:
     pass
 
 lam =  lambda conf: print("hello")
-opentelemetry_quicksetup_for_testing(service_name='server-ms', digma_backend="http://localhost:5050",
-                                     configuration=DigmaConfiguration().trace_this_package()
-                                                           .set_environment('dev'))
+
+digma_opentelemetry_bootstrap_for_testing(service_name='server-ms', digma_backend="http://localhost:5050",
+                                          configuration=DigmaConfiguration().trace_this_package()
+                                          .set_environment('dev'))
 
 # digma_conf = Configuration()\
 #     .trace_this_package()

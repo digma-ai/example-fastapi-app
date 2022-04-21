@@ -11,7 +11,7 @@ from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 from opentelemetry.instrumentation.logging import LoggingInstrumentor
 from opentelemetry.instrumentation.requests import RequestsInstrumentor
 
-from opentelemetry.instrumentation.digma import opentelemetry_quicksetup, DigmaConfiguration
+from opentelemetry.instrumentation.digma import digma_opentelmetry_boostrap, DigmaConfiguration
 from test_instrumentation.test_instrumentation import FastApiTestInstrumentation
 
 load_dotenv()
@@ -23,9 +23,9 @@ except:
     pass
 
 
-opentelemetry_quicksetup(service_name='users-ms',
-                         configuration=DigmaConfiguration().trace_this_package(),
-                         digma_backend="http://localhost:5050")
+digma_opentelmetry_boostrap(service_name='users-ms',
+                            configuration=DigmaConfiguration().trace_this_package(),
+                            digma_backend="http://localhost:5050")
 
 app = FastAPI()
 

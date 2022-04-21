@@ -16,8 +16,8 @@ from starlette import status
 
 from opentelemetry import trace
 from opentelemetry.instrumentation.digma import DigmaConfiguration
-from tests.opentelmetry.instrumentation.digma import opentelemetry_quicksetup_for_testing
-from tests.opentelmetry.instrumentation.digma.test_instrumentation import FastApiTestInstrumentation
+from tests.opentelmetry.instrumentation.digma import digma_opentelemetry_bootstrap_for_testing
+from tests.opentelmetry.instrumentation.digma.helpers import FastApiTestInstrumentation
 
 load_dotenv()
 
@@ -27,19 +27,9 @@ try:
 except:
     pass
 
-
-opentelemetry_quicksetup_for_testing(service_name='client-ms',
-                                     configuration=DigmaConfiguration().trace_this_package(root='../').trace_package('acme'),
-                                     digma_backend="http://localhost:5050")
-
-# digma_conf = Configuration()\
-#     .trace_this_package(root='../')\
-#     .trace_package('common')
-
-# resource = Resource.create(attributes={SERVICE_NAME: 'client-ms'}).merge(digma_conf.resource)
-# provider = TracerProvider(resource=resource)
-# provider.add_span_processor(digma_conf.span_processor)
-# trace.set_tracer_provider(provider)
+digma_opentelemetry_bootstrap_for_testing(service_name='client-ms',
+                                          configuration=DigmaConfiguration().trace_this_package(root='../').trace_package('acme'),
+                                          digma_backend="http://localhost:5050")
 
 app = FastAPI()
 
