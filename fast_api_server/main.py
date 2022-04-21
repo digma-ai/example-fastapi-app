@@ -10,7 +10,7 @@ from fastapi.params import Query
 from database_validation import Permisson
 
 from database_validation import DomainValidator
-from opentelemetry.instrumentation.digma import digma_opentelmetry_boostrap, DigmaConfiguration
+from opentelemetry.instrumentation.digma import DigmaConfiguration
 from root_api_response import RootApiResponse
 from opentelemetry import trace
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
