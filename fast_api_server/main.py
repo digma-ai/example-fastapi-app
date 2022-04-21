@@ -17,11 +17,12 @@ from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 from opentelemetry.instrumentation.logging import LoggingInstrumentor
 from opentelemetry.instrumentation.requests import RequestsInstrumentor
 
-from tests.opentelmetry.instrumentation.digma import digma_opentelemetry_bootstrap_for_testing
-from tests.opentelmetry.instrumentation.digma.helpers import FastApiTestInstrumentation
+
 from user.user_service import UserService
 from user_validation import UserValidator
 from flows import recursive_call
+from digma.instrumentation.test_tools import digma_opentelemetry_bootstrap_for_testing
+from digma.instrumentation.test_tools.helpers import FastApiTestInstrumentation
 
 load_dotenv()
 

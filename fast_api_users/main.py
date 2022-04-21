@@ -4,6 +4,8 @@ from typing import Optional
 import git
 import requests
 import uvicorn
+from digma.instrumentation.test_tools import digma_opentelemetry_bootstrap_for_testing
+from digma.instrumentation.test_tools.helpers import FastApiTestInstrumentation
 from dotenv import load_dotenv
 from fastapi import FastAPI, Header
 from opentelemetry import trace
@@ -11,8 +13,7 @@ from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 from opentelemetry.instrumentation.logging import LoggingInstrumentor
 from opentelemetry.instrumentation.requests import RequestsInstrumentor
 
-from opentelemetry.instrumentation.digma import digma_opentelmetry_boostrap, DigmaConfiguration
-from test_instrumentation.test_instrumentation import FastApiTestInstrumentation
+from opentelemetry.instrumentation.digma import DigmaConfiguration
 
 load_dotenv()
 
@@ -23,9 +24,10 @@ except:
     pass
 
 
-digma_opentelmetry_boostrap(service_name='users-ms',
-                            configuration=DigmaConfiguration().trace_this_package(),
-                            digma_backend="http://localhost:5050")
+digma_opentelemetry_bootstrap_for_testing(service_name='users-ms',
+                                          configuration=DigmaConfiguration().trace_this_package(root='../').trace_package('acme'),
+                                          digma_backend="http://localhost:5050")
+
 
 app = FastAPI()
 

@@ -1,8 +1,8 @@
 import datetime
 import time
 import requests
+from digma.instrumentation.test_tools.helpers import TestHelpers
 
-from tests.opentelmetry.instrumentation.digma.helpers import TestHelpers
 
 class DataScenarios:
 

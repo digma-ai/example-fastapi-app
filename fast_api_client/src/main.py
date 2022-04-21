@@ -7,6 +7,8 @@ import requests
 import uvicorn
 from acme.validations import validators
 from aio_pika import connect
+from digma.instrumentation.test_tools import digma_opentelemetry_bootstrap_for_testing
+from digma.instrumentation.test_tools.helpers import FastApiTestInstrumentation
 from dotenv import load_dotenv
 from fastapi import FastAPI, Header, Query
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
@@ -16,8 +18,7 @@ from starlette import status
 
 from opentelemetry import trace
 from opentelemetry.instrumentation.digma import DigmaConfiguration
-from tests.opentelmetry.instrumentation.digma import digma_opentelemetry_bootstrap_for_testing
-from tests.opentelmetry.instrumentation.digma.helpers import FastApiTestInstrumentation
+
 
 load_dotenv()
 
