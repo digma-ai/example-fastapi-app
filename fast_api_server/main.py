@@ -7,17 +7,22 @@ import uvicorn as uvicorn
 from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.params import Query
+from database_validation import Permisson
+
+from database_validation import DomainValidator
+from opentelemetry.instrumentation.digma import DigmaConfiguration
+from root_api_response import RootApiResponse
 from opentelemetry import trace
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 from opentelemetry.instrumentation.logging import LoggingInstrumentor
 from opentelemetry.instrumentation.requests import RequestsInstrumentor
 
-from digma_instrumentation.configuration import Configuration
-from digma_instrumentation.opentelemetry_utils import opentelemetry_init
+
 from user.user_service import UserService
 from user_validation import UserValidator
 from flows import recursive_call
-from test_instrumentation_helpers.test_instrumentation import FastApiTestInstrumentation
+from digma.instrumentation.test_tools import digma_opentelemetry_bootstrap_for_testing
+from digma.instrumentation.test_tools.helpers import FastApiTestInstrumentation
 
 load_dotenv()
 
@@ -27,10 +32,11 @@ try:
 except:
     pass
 
-opentelemetry_init(service_name='server-ms',
-                   digma_conf=Configuration().trace_this_package(),
-                   digma_endpoint="http://localhost:5050",
-                   test=True)
+lam =  lambda conf: print("hello")
+
+digma_opentelemetry_bootstrap_for_testing(service_name='server-ms', digma_backend="http://localhost:5050",
+                                          configuration=DigmaConfiguration().trace_this_package()
+                                          .set_environment('dev'))
 
 # digma_conf = Configuration()\
 #     .trace_this_package()
@@ -51,13 +57,13 @@ tracer = trace.get_tracer(__name__)
 user_service = UserService()
 
 
-@app.get("/users1")
-async def get_users():
-    with tracer.start_as_current_span("user validation"):
-        try:
-            await UserValidator().validate_user(["2", "2", "3", "4"])
-        except:
-            raise Exception("here")
+# @app.get("/users1")
+# async def get_users():
+#     with tracer.start_as_current_span("user validation"):
+#         try:
+#             await UserValidator().validate_user(["2", "2", "3", "4"])
+#         except:
+#             raise Exception("here")
 
 
 @app.get("/users")
@@ -70,7 +76,11 @@ async def get_users():
 async def root():
     try:
         with tracer.start_as_current_span("root"):
-            user_service.all("2")
+
+            await DomainValidator().validate_permissions()
+
+            return RootApiResponse().render()
+
     except Exception as ex:
         # ex_type, ex, tb = sys.exc_info()
         # ss = traceback.extract_tb(tb)
@@ -81,24 +91,46 @@ async def root():
 async def validate(user_ids: Optional[List[str]] = Query(None)):
     ids = str.split(user_ids[0], ',')
 
+    await DomainValidator().validate_permissions()
+
+    await DomainValidator().validate_group_exists(["admins"])
+
+
     with tracer.start_as_current_span("user validation"):
         await UserValidator().validate_user(ids)
 
     return "okay"
 
+
+@app.get("/process")
+async def process():
+    with tracer.start_as_current_span("user validation"):
+        await DomainValidator().validate_permissions()
+
+
+@app.get("/login")
+async def login():
+    try:
+        with tracer.start_as_current_span("login validation"):
+            await user_service.validate(Permisson.current_context)
+    except Exception as ex:
+        # ex_type, ex, tb = sys.exc_info()
+        # ss = traceback.extract_tb(tb)
+        raise Exception(f'error occurred : {str(ex)}')
+
 @app.get("/validateuser")
 async def validate_user():
     try:
-        user_service.all("2")
+        await user_service.validate("2")
     except Exception as ex:
         # ex_type, ex, tb = sys.exc_info()
         # ss = traceback.extract_tb(tb)
         raise Exception(f'error occurred : {str(ex)}')
 
 
-@app.get("/flow7")  # unhandled error
-async def flow7():
-    user_service.all()
+@app.get("/uservalidation")  # unhandled error
+async def user_validation():
+    user_service.validate()
 
 
 @app.get("/flow8")  # unhandled error

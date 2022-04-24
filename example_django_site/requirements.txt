@@ -1,0 +1,4 @@
+opentelemetry-sdk
+opentelemetry-instrumentation-django
+requests
+opentelemetry-instrumentation-digma==0.5.8

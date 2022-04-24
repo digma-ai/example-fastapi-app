@@ -1,18 +1,23 @@
 ﻿<Properties StartupConfiguration="{698D55F9-6CD0-4D71-97E0-A8587A250B61}|Default">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
-  <MonoDevelop.Ide.ItemProperties.dotnet__api__example PreferredExecutionTarget="/Applications/Google Chrome.app" />
-  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
-  <MonoDevelop.Ide.Workbench ActiveDocument="dotnet_api_example/Program.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="dotnet_api_example/Controllers/TransferController.cs">
     <Files>
-      <File FileName="dotnet_api_example/Program.cs" Line="1" Column="1" />
+      <File FileName="dotnet_api_example/Program.cs" Line="9" Column="16" />
+      <File FileName="dotnet_api_example/RunWebApp.cs" Line="46" Column="23" />
+      <File FileName="../../OpenTelemetry-Instrumentation-Digma/DigmaInstrumentationHelperExtensions.cs" Line="35" Column="1" />
+      <File FileName="dotnet_api_example/Controllers/TransferController.cs" Line="23" Column="6" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
         <State name="__root__">
           <Node name="dotnet_api_example" expanded="True">
-            <Node name="dotnet_api_example" expanded="True" />
+            <Node name="dotnet_api_example" expanded="True" selected="True">
+              <Node name="Controllers" expanded="True" />
+            </Node>
           </Node>
         </State>
       </Pad>
@@ -22,5 +27,5 @@
     </Pads>
   </MonoDevelop.Ide.Workbench>
   <MultiItemStartupConfigurations />
-  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.ItemProperties.dotnet__api__example PreferredExecutionTarget="/Applications/Google Chrome.app" />
 </Properties>

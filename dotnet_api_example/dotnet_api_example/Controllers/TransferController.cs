@@ -9,10 +9,7 @@ public class TransferController : ControllerBase
 {
     private static readonly ActivitySource Activity = new(nameof(TransferController));
 
-    private static readonly string[] Summaries = new[]
-    {
-        "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-    };
+
 
     private readonly ILogger<TransferController> _logger;
 
@@ -26,9 +23,6 @@ public class TransferController : ControllerBase
     {
         using (var activity = Activity.StartActivity("Injest OTEL Data", ActivityKind.Producer)){
             throw new Exception("Blah");
-
         }
-
     }
 }
-
