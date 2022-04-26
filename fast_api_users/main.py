@@ -25,7 +25,8 @@ except:
 
 
 digma_opentelemetry_bootstrap_for_testing(service_name='users-ms',
-                                          configuration=DigmaConfiguration().trace_this_package(root='../').trace_package('acme'),
+                                          configuration=DigmaConfiguration().trace_this_package(root='../')
+                                          .trace_this_package(),
                                           digma_backend="http://localhost:5050")
 
 
