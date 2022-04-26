@@ -2,6 +2,7 @@ package user
 
 import (
 	"errors"
+	"fmt"
 	"time"
 )
 
@@ -13,6 +14,7 @@ type Service interface {
 	List() ([]User, error)
 	Add(user User) error
 	Get(id string) (User, error)
+	Delete(id string) error
 	Init()
 }
 
@@ -29,9 +31,21 @@ type userService struct {
 	users map[string]User
 }
 
-var ErrIdInvalid = errors.New("user id too long")
+//var ErrIdInvalid = errors.New("user id too long")
 var ErrUserAlreadyExists = errors.New("user already exists")
 var ErrUserNotFound = errors.New("user not found")
+
+// type error interface {
+// 	Error() string
+// }
+
+type UserIdInvalidError struct {
+	Id string
+}
+
+func (e *UserIdInvalidError) Error() string {
+	return fmt.Sprintf("%s: user id invalid", e.Id)
+}
 
 func (u *userService) Init() {
 	u.users = make(map[string]User)
@@ -47,6 +61,13 @@ func (u *userService) Get(id string) (User, error) {
 	return value, nil
 }
 
+func (u *userService) Delete(id string) error {
+	time.Sleep(ExtraLatency)
+	var user *User
+	fmt.Println(user.Id) //runtime error: invalid memory address
+	return nil
+}
+
 func (u *userService) List() ([]User, error) {
 	time.Sleep(ExtraLatency)
 
@@ -60,7 +81,7 @@ func (u *userService) List() ([]User, error) {
 func (u *userService) Add(user User) error {
 	time.Sleep(ExtraLatency)
 	if len(user.Id) > 5 {
-		return ErrIdInvalid
+		return &UserIdInvalidError{Id: user.Id}
 	}
 	if _, ok := u.users[user.Id]; ok {
 		return ErrUserAlreadyExists

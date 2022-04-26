@@ -5,6 +5,9 @@
 		},
 		{
 			"path": "user-service"
+		},
+		{
+			"path": "error_examples"
 		}
 	],
 	"settings": {}

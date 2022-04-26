@@ -9,6 +9,7 @@ import (
 	"example.com/authentication/auth"
 	"example.com/authentication/infrastructure/opentelemetry"
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 	"go.opentelemetry.io/contrib/instrumentation/github.com/labstack/echo/otelecho"
 	"go.opentelemetry.io/otel"
 	//"example.com/authentication/infrastructure/opentelemetry"
@@ -43,6 +44,9 @@ func main() {
 
 	r := echo.New()
 	r.Use(otelecho.Middleware(appName))
+	r.Use(middleware.Logger())
+	r.Use(middleware.Recover())
+
 	r.POST("/auth", controller.Authenticate)
 
 	fmt.Println("listening on :" + port)

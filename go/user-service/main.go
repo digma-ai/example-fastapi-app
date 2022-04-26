@@ -7,6 +7,8 @@ import (
 	"os"
 	"time"
 
+	"github.com/gorilla/handlers"
+
 	"example.com/user/infrastructure/opentelemetry"
 	"example.com/user/user"
 	"github.com/gorilla/mux"
@@ -44,8 +46,10 @@ func main() {
 
 	router := mux.NewRouter().StrictSlash(true)
 	router.Use(otelmux.Middleware(appName))
+	router.Use(mux.MiddlewareFunc(handlers.RecoveryHandler()))
 	router.HandleFunc("/users", controller.Add).Methods("POST")
 	router.HandleFunc("/users/{id}", controller.Get).Methods("GET")
+	router.HandleFunc("/users/{id}", controller.Delete).Methods("DELETE")
 	router.HandleFunc("/users", controller.All).Methods("GET")
 
 	fmt.Println("listening on :" + port)

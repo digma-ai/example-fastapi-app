@@ -2,8 +2,17 @@ POST http://localhost:8010/users HTTP/1.1
 content-type: application/json
 
 {
-    "Id": "123123123123123",
+    "Id": "1123123123123",
     "name": "shay"
+}
+
+### 
+
+POST http://localhost:8010/users HTTP/1.1
+content-type: application/json
+
+{
+
 }
 
 ### 
@@ -15,3 +24,14 @@ GET http://localhost:8010/users HTTP/1.1
 ### 
 
 GET http://localhost:8010/users/1 HTTP/1.1
+
+
+### 
+# panic
+DELETE http://localhost:8010/users/1 HTTP/1.1
+
+
+
+### 
+
+GET http://localhost:8010/users/666 HTTP/1.1

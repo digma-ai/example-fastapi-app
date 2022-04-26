@@ -30,5 +30,6 @@ func (u *authService) Init() {
 
 func (u *authService) Authenticate(user User) error {
 	time.Sleep(ExtraLatency)
+	
 	return nil
 }
