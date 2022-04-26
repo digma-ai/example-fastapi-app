@@ -29,7 +29,8 @@ except:
     pass
 
 digma_opentelemetry_bootstrap_for_testing(service_name='client-ms',
-                                          configuration=DigmaConfiguration().trace_this_package(root='../').trace_package('acme'),
+                                          configuration=DigmaConfiguration().trace_this_package(root='../')
+                                          .trace_package('acme'),
                                           digma_backend="http://localhost:5050")
 
 app = FastAPI()
