@@ -1,2 +1,3 @@
 aiohttp
-opentelemetry-exporter-digma==0.0.14
+opentelemetry-instrumentation-digma==0.5.12
+digma-instrumentation-testtools==0.5.12

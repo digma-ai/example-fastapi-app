@@ -1,5 +1,6 @@
 import os
 import random
+from asyncio import sleep
 from typing import List, Optional
 
 import git
@@ -141,6 +142,19 @@ async def flow8():
 @app.get("/exception_generator")
 async def chaos():
     raise type(f'Exception{random.randint(0, 100000)}', (Exception,), {})
+
+
+
+@app.get("/delay400")
+async def delay400():
+    with tracer.start_as_current_span("delay400"):
+        await sleep(0.4)
+
+
+@app.get("/delay/{delay}")
+async def delay(delay:float):
+    with tracer.start_as_current_span("delay"):
+        await sleep(delay)
 
 
 if __name__ == "__main__":
