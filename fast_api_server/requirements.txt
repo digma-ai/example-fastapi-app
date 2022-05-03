@@ -7,8 +7,8 @@ opentelemetry-sdk==1.11.1
 opentelemetry-instrumentation-fastapi==0.30b1
 opentelemetry-instrumentation-requests==0.30b1
 opentelemetry-instrumentation-logging==0.30b1
-opentelemetry-instrumentation-digma==0.5.12
-digma-instrumentation-testtools==0.5.12
+opentelemetry-instrumentation-digma==0.5.14
+digma-instrumentation-testtools==0.5.14
 
 
 

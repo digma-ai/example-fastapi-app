@@ -1,2 +1,2 @@
 requests==2.27.1
-digma-instrumentation-testtools==0.5.12
+digma-instrumentation-testtools==0.5.14
