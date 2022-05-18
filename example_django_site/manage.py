@@ -2,16 +2,16 @@
 """Django's command-line utility for administrative tasks."""
 import os
 import sys
-from opentelemetry.instrumentation.digma import digma_opentelmetry_boostrap
-
+from opentelemetry.instrumentation.digma import digma_opentelemetry_boostrap
+from opentelemetry.instrumentation.digma.digma_configuration import DigmaConfiguration
+from opentelemetry.instrumentation.digma.django import DigmaIntrumentor
 from opentelemetry.instrumentation.django import DjangoInstrumentor
+
+from observability import setup_observability
 
 
 def main():
-    """Run administrative tasks."""
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'example_django_site.settings')
-    digma_opentelmetry_boostrap("sample-django","http://localhost:5051", new )
-    DjangoInstrumentor().instrument()
+    setup_observability()
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:
