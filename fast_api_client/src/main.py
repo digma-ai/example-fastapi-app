@@ -89,5 +89,11 @@ async def process():
 
     return status.HTTP_200_OK
 
+
+@app.get("/check/{delay}")
+async def check(delay: str):
+    await validators.sleep(int(delay))
+    return status.HTTP_200_OK
+
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8001)

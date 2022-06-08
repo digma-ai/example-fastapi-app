@@ -1,5 +1,23 @@
 {
-    "settings": {
-        "digma.environment": "DEV"
-    }
+	"folders": [
+		{
+			"path": "fast_api_client"
+		},
+		{
+			"path": "fast_api_server"
+		},
+		{
+			"path": "fast_api_users"
+		},
+		{
+			"path": "common-acme"
+		},
+		{
+			"path": "aiohttp_server"
+		}
+	],
+	"settings": {
+		"digma.environment": "UNSET",
+		"digma.hideFramesOutsideWorkspace": false
+	}
 }
